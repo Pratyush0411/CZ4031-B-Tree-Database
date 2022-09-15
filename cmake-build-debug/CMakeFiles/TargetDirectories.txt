@@ -1,0 +1,3 @@
+C:/Users/praty/Desktop/Advanced databases/cmake-build-debug/CMakeFiles/Advanced_databases.dir
+C:/Users/praty/Desktop/Advanced databases/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/praty/Desktop/Advanced databases/cmake-build-debug/CMakeFiles/rebuild_cache.dir

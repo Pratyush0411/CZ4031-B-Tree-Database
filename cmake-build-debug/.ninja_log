@@ -1,0 +1,14 @@
+# ninja log v5
+20	774	6846792680744660	CMakeFiles/Advanced_databases.dir/controllers/DatabaseManager.cpp.obj	cfa2394b0b889ed5
+1	778	6846792680765377	CMakeFiles/Advanced_databases.dir/entities/storage.cpp.obj	6ed76d975e2a8773
+7	787	6846792680866179	CMakeFiles/Advanced_databases.dir/entities/database.cpp.obj	d8065366e88f1589
+11	790	6846792680915700	CMakeFiles/Advanced_databases.dir/entities/datablock.cpp.obj	8d9a54e176be9f0d
+16	1804	6846792691040587	CMakeFiles/Advanced_databases.dir/test/testBlock.cpp.obj	bc75389af1d25985
+1806	2089	6846792693843749	Advanced_databases.exe	76bcd83da0526509
+5	470	6846793235408857	CMakeFiles/Advanced_databases.dir/controllers/DatabaseManager.cpp.obj	cfa2394b0b889ed5
+475	597	6846793236628766	Advanced_databases.exe	76bcd83da0526509
+29	700	6846806405506222	CMakeFiles/Advanced_databases.dir/controllers/DatabaseManager.cpp.obj	cfa2394b0b889ed5
+10	704	6846806405546114	CMakeFiles/Advanced_databases.dir/entities/storage.cpp.obj	6ed76d975e2a8773
+18	738	6846806405895863	CMakeFiles/Advanced_databases.dir/entities/database.cpp.obj	d8065366e88f1589
+34	800	6846806406504235	CMakeFiles/Advanced_databases.dir/test/testBlock.cpp.obj	bc75389af1d25985
+24	813	6846806406633210	CMakeFiles/Advanced_databases.dir/entities/datablock.cpp.obj	8d9a54e176be9f0d
