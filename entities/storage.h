@@ -13,6 +13,7 @@ typedef unsigned int uint;
 
 class Record{
     public:
+    bool isDeleted;
     char tconst[10] = "";
     float avgRating;
     uint numVotes;
@@ -22,7 +23,7 @@ class Record{
 
 };
 
-
+// super class (IndexBlock )
 class Block{
 
 public:

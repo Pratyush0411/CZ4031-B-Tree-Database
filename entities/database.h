@@ -10,6 +10,7 @@ using namespace std;
 
 class Database{
 private:
+    vector<Block> freeBlocks;
     vector<Block> blocksList;
 
 public:
