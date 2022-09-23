@@ -30,7 +30,7 @@ void DataBlock::deleteRecord(Record rec) {
 
     int pos = 0;
     bool foundFlag = false;
-    for (Record iter: this->recordList){
+    for (Record& iter: this->recordList){
         if (iter == rec)
         {
 
@@ -44,19 +44,20 @@ void DataBlock::deleteRecord(Record rec) {
     if (foundFlag) {
         cout << "Erasing data .." << endl;
         this->recordList.erase(recordList.begin() + pos);
+        this->numRecords--;
     }
 
 
 }
 
 void DataBlock::printBlock() {
-    for (Record rec:this->recordList){
+    for (Record& rec:this->recordList){
         cout << rec.tconst << " " <<rec.avgRating << " " <<rec.numVotes << endl;
     }
 }
 
 
-DataBlock::DataBlock() {
-
+DataBlock::DataBlock(int blockSize) {
+    this->MAXSIZE = blockSize;
     this->numRecords = 0;
 }

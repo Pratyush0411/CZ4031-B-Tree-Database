@@ -14,8 +14,11 @@ private:
     vector<Block> blocksList;
 
 public:
-
+    Database(int capacity, int blockSize);
     static int MAXSIZE;
+    int blockSize;
     void addNewBlock(Block blk);
-
+    void addRecord(Record record);
+    int getNumBlocks();
+    unsigned int getSize();
 };

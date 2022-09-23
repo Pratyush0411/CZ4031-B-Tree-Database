@@ -5,7 +5,7 @@
 #include "storage.h"
 #include "vector"
 
-class DataBlock : Block{
+class DataBlock : public Block{
 
 
 private:
@@ -14,7 +14,7 @@ private:
 
 public:
     vector<Record> recordList;
-    DataBlock();
+    DataBlock(int blockSize);
     // ~ DataBlock();
     void insertRecord (Record rec);
     void deleteRecord (Record rec);
