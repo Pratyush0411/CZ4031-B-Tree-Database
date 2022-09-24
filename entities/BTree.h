@@ -2,24 +2,61 @@
 // Created by praty on 17/9/2022.
 //
 #pragma once
-class DuplicateNode{
-    Block** blkPtr;
-    Record** recordPtr;
+
+#include "vector"
+#include "storage.cpp"
+
+class DuplicateNode {
+private:
+    int N;
+    int size;
+public:
+    int getSize() const;
+
+    void setSize(int size);
+
+private:
+    int determineN(int);
+
+    DuplicateNode *nextNode;
+public:
+    vector<Record *> recordArray;
+
+    DuplicateNode();
+
+    void pushRecord(Record *);
+
+    void print();
+
+    int getN() const;
+
+    void setN(int n);
+
+    DuplicateNode *getNextNode() const;
+
+    void setNextNode(DuplicateNode *nextNode);
+
 };
+
 class Node {
     bool isLeaf;
     int size;
     int *key; // array of keys
     Node **ptr;// array of node pointers
     Node *parent;
+    DuplicateNode **duplicateNodePtr;
 
 
 public:
+    void print();
+
     static int MAXSIZE;
 
     explicit Node(bool);
 
-    void insertIntoLeafNode(int);
+    bool checkAndInsertDuplicateIntoLeaf(int x, Record *rec);
+
+    void insertIntoLeafNode(int, Record *);
 
     void insertIntoInternal(int, Node *);
 
@@ -34,6 +71,10 @@ public:
     Node *getPtr(int i) const;
 
     void setPtr(int, Node *);
+
+    DuplicateNode *getDuplicateNodePtr(int i) const;
+
+    void setDuplicateNodePtr(int, DuplicateNode *);
 
     Node *getParent() const;
 
@@ -51,7 +92,11 @@ public:
 
 class BPTree {
     Node *rootNode;
+public:
+    Node *getRootNode() const;
+
 private:
+    int determineN(int);
     Node *searchLeafNode(int);
 
     void createRootNode(Node *orgNode, Node *newNode, int smallestLB);
@@ -59,7 +104,7 @@ private:
 public:
     BPTree();
 
-    void insert(int);
+    void insert(int, Record *);
 
     void display();
 
@@ -67,7 +112,9 @@ public:
 
     Node *splitAndReturnNewInternal(Node *orgInternal, int x, Node *newChild);
 
-    Node *splitAndReturnNewLeaf(Node *orgNode, int x);
+    Node *splitAndReturnNewLeaf(Node *orgNode, int x, Record *);
 
     int findSmallestLB(Node *cursor);
+
+
 };

@@ -9,6 +9,10 @@ int Block::getBlkSize() {
     return sizeof(*this);
 }
 
+void Record::print() {
+    cout<<this->tconst<<" "<<this->avgRating<<" "<<this->numVotes<<endl;
+}
+
 bool Record:: operator == (Record rhs){
 
     if (this->avgRating == rhs.avgRating && strcmp(this->tconst,rhs.tconst)==0

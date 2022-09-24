@@ -6,29 +6,40 @@
 
 #include <cstring>
 
-void testSplitLeaf(){
-    BPTree* b = new BPTree();
-    Node * a = new Node(true);
-    a->insertIntoLeafNode(10);
-    a->insertIntoLeafNode(12);
-    a->insertIntoLeafNode(13);
-
-
-    // testSplitAndReturnNewLeaf
-    Node* c= b->splitAndReturnNewLeaf(a,9);
-    a->display();
-    c->display();
-    a->getPtr(a->getSize())->display();
-
+void printDuplicateNode(Node* leaf){
+    for (int i = 0; i<leaf->getSize();i++){
+        cout<< "B Tree Key "<< leaf->getKey(i)<<" Duplicate Node"<<endl;
+        leaf->getDuplicateNodePtr(i)->print();
+        cout<<"\n";
+    }
 }
 
 void testInsertion(){
     BPTree* b = new BPTree();
     for(int i = 0;i<17;i++){
-        b->insert(i*4);
+        cout<<"Iteration "<<i<<endl;
+        for (int j = 1; j<=4;j++){
+            Record * dummy = new Record("",10,i*j);
+            b->insert(i*j,dummy);
+        }
+        b->display();
     }
-    b->display();
+    Node *cursor = b->getRootNode();
+    while (!cursor->isLeaf1()) {
+        cursor = cursor->getPtr(0);
+    }
+
+    while(cursor != NULL){
+        printDuplicateNode(cursor);
+        cursor = cursor->getPtr(cursor->getSize());
+    }
 }
+
+void testInsertionFromDataset(){
+
+}
+
+
 int main(){
     testInsertion();
 
