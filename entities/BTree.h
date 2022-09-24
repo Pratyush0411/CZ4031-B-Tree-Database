@@ -105,6 +105,7 @@ public:
     BPTree();
 
     void insert(int, Record *);
+    DuplicateNode* search(int);
 
     void display();
 

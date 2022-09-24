@@ -436,18 +436,6 @@ void BPTree::insert(int x, Record *rec) {
 }
 
 void BPTree::display() {
-//    if (cursor != NULL) {
-//        for (int i = 0; i < cursor->getSize(); i++) {
-//            cout << cursor->getKey(i) << " ";
-//        }
-//        cout << "\n";
-//        if (cursor->isLeaf1() != true) {
-//            for (int i = 0; i < cursor->getSize() + 1; i++) {
-//                display(cursor->getPtr(i));
-//            }
-//        }
-//    }
-
 // BFS printing the tree
 
     vector<Node *> q;
@@ -458,7 +446,7 @@ void BPTree::display() {
         cout << "Level " << level << ":" << " ";
         vector<Node *> cpy;
         for (Node *node: q) {
-            node->display();
+            //node->display();
             cpy.push_back(node);
         }
         q.clear();
@@ -478,6 +466,19 @@ void BPTree::display() {
 
 Node *BPTree::getRootNode() const {
     return rootNode;
+}
+
+DuplicateNode *BPTree::search(int x) {
+    Node* leaf = this->searchLeafNode(x);
+
+    for (int i = 0; i < leaf->getSize(); i++) {
+        if (leaf->getKey(i) == x) {
+            cout << "Key exists" << endl;
+            leaf->getDuplicateNodePtr(i)->print();
+            return leaf->getDuplicateNodePtr(i);
+        }
+    }
+
 }
 
 
