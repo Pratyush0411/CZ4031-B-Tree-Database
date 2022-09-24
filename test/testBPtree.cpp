@@ -27,7 +27,9 @@ void testInsertion(){
     for(int i = 0;i<17;i++){
         b->insert(i*4);
     }
+    b->remove(4);
     b->display();
+
 }
 int main(){
     testInsertion();

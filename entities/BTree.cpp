@@ -10,6 +10,7 @@ using namespace std;
 
 
 int Node::MAXSIZE = 3;
+int MAXSIZEE = 3;
 
 Node::Node(bool isLeaf) {
     this->isLeaf = isLeaf;
@@ -73,6 +74,11 @@ void Node::setSize(int size) {
     this->size = size;
 }
 
+void Node::deleteKeyPtrNode(){
+    delete[] this->key;
+    delete[] this->ptr;
+    delete this;
+}
 
 int Node::getKey(int i) const {
     return this->key[i];
@@ -300,6 +306,322 @@ void BPTree::insert(int x) {
     }
 
 }
+
+
+void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
+    //if node is root
+    if(this->rootNode == cursor){
+        if(cursor->getSize() == 1){
+            //cursor moves to next
+            if(cursor->getPtr(1) == child){
+                //refractor this part out?
+                //for duplicate records?
+                /*
+                delete[] child->key;
+                delete[] child->ptr;
+                delete[] child;
+                this->rootNode = cursor->getPtr(0);
+                delete[] cursor->key;
+                delete[] cursor->ptr;
+                delete[] cursor;
+                */
+                child->deleteKeyPtrNode();
+                this->rootNode = cursor->getPtr(0);
+                cursor->deleteKeyPtrNode();
+                return;
+            }
+            else if(cursor->getPtr(0) == child){
+                /*
+                delete[] child->key;
+                delete[] child->ptr;
+                delete[] child;
+                */
+                child->deleteKeyPtrNode();
+                this->rootNode = cursor->getPtr(1);
+                /*
+                delete[] cursor->key;
+                delete[] cursor->ptr;
+                delete[] cursor;
+                */
+                cursor->deleteKeyPtrNode();
+                return;
+            }
+        }
+    }
+
+    int num=0;
+    while( (cursor->getKey(num) != x) && (num<cursor->getSize()) ){
+        num++;
+    }
+    for(int i=num; num<cursor->getSize(); i++){
+        cursor->setKey(i, cursor->getKey(i+1));
+    }
+    num=0;
+    while(num < cursor->getSize()+1){
+        if(cursor->getPtr(num) == child){
+            break;
+        }
+        num++;
+    }
+    for(int i=num; i < cursor->getSize()+1; i++){
+        cursor->setPtr(i, cursor->getPtr(i+1));
+    }
+    cursor->setSize(cursor->getSize()-1);
+    if(cursor->getSize() >= ((MAXSIZEE+1)/2 -1)){
+        return;
+    }
+    if(cursor == this->rootNode){
+        return;
+    }
+    //else, try fitting
+    Node* parent = cursor->getParent();
+    int left,right;
+    for(num=0; num < parent->getSize()+1; num++){
+        if(parent->getPtr(num) == cursor){
+            left = num-1;
+            right = num+1;
+            break;
+        }
+    }
+    if(left>=0){
+        Node *leftNode = parent->getPtr(left);
+        if(leftNode->getSize() >= (MAXSIZEE+1)/2){
+            //fit here
+            //key
+            for(int i=cursor->getSize(); i>0; i--){
+                cursor->setKey(i, cursor->getKey(i-1));
+            }
+            cursor->setKey(0, parent->getKey(left));
+            parent->setKey(left, leftNode->getKey(leftNode->getSize()-1));
+            //ptr
+            for(int i=cursor->getSize()+1; i>0; i--){
+                cursor->setPtr(i, cursor->getPtr(i-1));
+            }
+            cursor->setPtr(0, leftNode->getPtr(leftNode->getSize()));
+            cursor->setSize(cursor->getSize()+1);
+            leftNode->setSize(leftNode->getSize()-1);
+            return;
+        }
+    }
+    if(right<=parent->getSize()){
+        Node *rightNode = parent->getPtr(right);
+        if(rightNode->getSize() >= (MAXSIZEE+1)/2){
+            //fit here
+            //key
+            cursor->setKey(cursor->getSize(), parent->getKey(num));
+            parent->setKey(num, rightNode->getKey(0));
+            for(int i=0; i<rightNode->getSize()-1; i++){
+                rightNode->setKey(i, rightNode->getKey(i+1));
+            }
+            //ptr
+            cursor->setPtr(cursor->getSize()+1, rightNode->getPtr(0));
+            //++i?
+            for(int i=0; i<rightNode->getSize(); i++){
+                rightNode->setPtr(i, rightNode->getPtr(i+1));
+            }
+            cursor->setSize(cursor->getSize()+1);
+            rightNode->setSize(rightNode->getSize()-1);
+            return;
+        }
+    }
+    //have to merge
+    if(left>=0){
+        Node *leftNode = parent->getPtr(left);
+        leftNode->setKey(leftNode->getSize(), parent->getKey(left));
+        for(int i=leftNode->getSize()+1, j=0; j<cursor->getSize(); j++){
+            leftNode->setKey(i, cursor->getKey(j));
+        }
+        for(int i=leftNode->getSize()+1, j=0; j<cursor->getSize()+1; j++){
+            leftNode->setPtr(i, cursor->getPtr(j));
+            cursor->setPtr(j, NULL);
+        }
+        leftNode->setSize(leftNode->getSize() + cursor->getSize() + 1);
+        cursor->setSize(0);
+        //recursion
+        removeFromInternal(parent->getKey(left), parent, cursor);
+    }
+    else if(right<=parent->getSize()){
+        Node *rightNode = parent->getPtr(right);
+        //for key
+        cursor->setKey(cursor->getSize(), parent->getKey(right)-1);
+        for(int i=cursor->getSize()+1, j=0; j<rightNode->getSize(); j++){
+            cursor->setKey(i, rightNode->getKey(j));
+        }
+        //for ptr
+        for(int i=cursor->getSize()+1, j=0; j<rightNode->getSize()+1; j++){
+            cursor->setPtr(i, rightNode->getPtr(j));
+            rightNode->setPtr(j, NULL);
+        }
+        cursor->setSize(cursor->getSize()+rightNode->getSize()+1);
+        rightNode->setSize(0);
+        //recursively del.
+        removeFromInternal(parent->getKey(right-1), parent, rightNode);
+    }
+}
+
+
+void BPTree::remove(int x){
+    if(this->rootNode == NULL){
+        //empty
+        return;
+    }
+
+    Node *cursor = rootNode;
+    Node *parent;
+    int left, right;
+    while(!cursor->isLeaf1()) {
+        for(int i =0; i< cursor->getSize(); i++){
+            parent = cursor;
+            left = i-1;
+            right = i+1;
+            if(x < cursor->getKey(i)){
+                cursor = cursor->getPtr(i);
+                break;
+            }
+            if(i==(cursor->getSize()-1)){
+                left = i;
+                right = i+2;
+                cursor = cursor->getPtr(i+1);
+                break;
+            }
+        }
+    }
+
+    bool f = false;
+    int position;
+    for(position=0;position<cursor->getSize();position++){
+        if(cursor->getKey(position) == x){
+            f = true;
+            break;
+        }
+    }
+    if(!f){
+        //key doesn't exist
+        return;
+    }
+
+    for(int i = position; i<cursor->getSize(); i++){
+        cursor->setKey(i, cursor->getKey(i+1));
+    }
+    cursor->setSize( cursor->getSize() - 1 );
+
+    if(this->rootNode == cursor){
+        //empty tree
+        for(int i=0;i<MAXSIZEE+1;i++){
+            cursor->setPtr(i, NULL);
+        }
+        if(cursor->getSize()==0){
+            //free memory, key,ptr,root
+            /*
+            delete[] cursor->key;
+            delete[] cursor->ptr;
+            delete cursor;
+            */
+            cursor->deleteKeyPtrNode();
+            this->rootNode = NULL;
+            //rootNode = NULL;
+
+        }
+        return;
+    }
+
+    cursor->setPtr(cursor->getSize(), cursor->getPtr(cursor->getSize()+1));
+    cursor->setPtr(cursor->getSize()+1, NULL);
+
+    if(cursor->getSize() >= ((MAXSIZEE+1)/2) ){
+        //no need borrow
+        return;
+    }
+
+    //else need to borrow.
+    //left exists
+    if(left >= 0){
+        Node *leftNode = parent->getPtr(left);
+        //check if can trf
+        if(leftNode->getSize() >= ( (MAXSIZEE+1)/2 + 1) ){
+            for(int i=cursor->getSize();i>0;i--){
+                cursor->setKey(i, i-1);
+            }
+
+            cursor->setSize(cursor->getSize()+1);
+            //ptr to next leaf
+            cursor->setPtr(cursor->getSize(), cursor->getPtr(cursor->getSize()-1));
+            cursor->setPtr(cursor->getSize()-1, NULL);
+
+            //move key
+            cursor->setKey(0, leftNode->getKey(leftNode->getSize()-1));
+            //move left ptr
+            leftNode->setSize(leftNode->getSize()-1);
+            leftNode->setPtr(leftNode->getSize(), cursor);
+            leftNode->setPtr(leftNode->getSize()+1, NULL);
+            //parent node
+            parent->setKey(left, cursor->getKey(0));
+            return;
+        }
+    }
+
+    //No left, or left cannot trf, check right exists
+    if(right <= parent->getSize()){
+        Node *rightNode = parent->getPtr(right);
+        //check if can trf
+        if(rightNode->getSize() >= ((MAXSIZEE+1)/2 + 1)){
+            cursor->setSize(cursor->getSize()+1);
+            //ptr to next leaf
+            cursor->setPtr(cursor->getSize(), cursor->getPtr(cursor->getSize()-1));
+            cursor->setPtr(cursor->getSize()-1, NULL);
+            //move key
+            cursor->setKey(cursor->getSize()-1, rightNode->getKey(0));
+            //move right ptr
+            rightNode->setSize(rightNode->getSize()-1);
+            rightNode->setPtr(rightNode->getSize(), rightNode->getPtr(rightNode->getSize()+1));
+            rightNode->setPtr(rightNode->getSize()+1, NULL);
+            //right shift right keys
+            for(int i=0;i<rightNode->getSize();i++){
+                rightNode->setKey(i, rightNode->getKey(i+1));
+            }
+            //parent node
+            parent->setKey(right-1, rightNode->getKey(0));
+            return;
+        }
+    }
+
+    //can't borrow neighbour, have to merge & delete
+    if(left >= 0){
+        Node *leftNode = parent->getPtr(left);
+        //shift keys to leftNode
+        for(int i = leftNode->getSize(), j=0; j<cursor->getSize(); i++, j++){
+            leftNode->setKey(i,j);
+        }
+        leftNode->setPtr(leftNode->getSize(), NULL);
+        leftNode->setSize(leftNode->getSize() + cursor->getSize());
+        leftNode->setPtr(leftNode->getSize(), cursor->getPtr(cursor->getSize()));
+
+        removeFromInternal(parent->getKey(left), parent, cursor);
+        /*
+        delete[] cursor->key;
+        delete[] cursor->ptr;
+        delete cursor;
+        */
+        cursor->deleteKeyPtrNode();
+    }
+    else if(right <= parent->getSize()){
+        Node* rightNode = parent->getPtr(right);
+        for(int i=cursor->getSize(), j=0; j<rightNode->getSize(); i++, j++){
+            cursor->setKey(i,rightNode->getKey(j));
+        }
+        cursor->setPtr(cursor->getSize(), NULL);
+        cursor->setSize(cursor->getSize()+rightNode->getSize());
+        cursor->setPtr(cursor->getSize(), rightNode->getPtr(rightNode->getSize()));
+        removeFromInternal(parent->getKey(right-1), parent, rightNode);
+        /*
+        delete[] rightNode->key;
+        delete[] rightNode->ptr;
+        delete rightNode;
+        */
+        rightNode->deleteKeyPtrNode();
+    }
+}
+
 
 void BPTree::display() {
 //    if (cursor != NULL) {

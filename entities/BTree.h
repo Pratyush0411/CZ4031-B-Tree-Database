@@ -45,6 +45,8 @@ public:
 
     Node *returnNextNode(int x);
 
+    void deleteKeyPtrNode();
+
     void display();
 };
 
@@ -60,6 +62,10 @@ public:
     BPTree();
 
     void insert(int);
+
+    void removeFromInternal(int, Node*, Node*);
+
+    void remove(int);
 
     void display();
 
