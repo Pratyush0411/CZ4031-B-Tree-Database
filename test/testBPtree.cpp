@@ -24,10 +24,12 @@ void testSplitLeaf(){
 
 void testInsertion(){
     BPTree* b = new BPTree();
-    for(int i = 0;i<17;i++){
+
+    for(int i = 0;i<4;i++){
         b->insert(i*4);
     }
-    b->remove(4);
+    b->display();
+    b->remove(8);
     b->display();
 
 }
