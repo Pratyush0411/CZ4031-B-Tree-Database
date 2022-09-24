@@ -461,6 +461,7 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
 
 
 void BPTree::remove(int x){
+    cout<<"\nRemoving "<< x <<endl;
     if(this->rootNode == NULL){
         //empty
         return;
@@ -497,6 +498,7 @@ void BPTree::remove(int x){
     }
     if(!f){
         //key doesn't exist
+        cout<<"\nCannot find key"<<endl;
         return;
     }
 

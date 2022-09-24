@@ -25,12 +25,18 @@ void testSplitLeaf(){
 void testInsertion(){
     BPTree* b = new BPTree();
 
-    for(int i = 0;i<4;i++){
+    for(int i = 0;i<13;i++){
         b->insert(i*4);
     }
     b->display();
+    //change insertion to split 2-1
+    //b->remove(4);
+    //issue when removing from first node
+    //b->remove(16);
+    //update parent key for when removing from rightmost node
     b->remove(8);
     b->display();
+
 
 }
 int main(){
