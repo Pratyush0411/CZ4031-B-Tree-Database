@@ -11,11 +11,15 @@ Database::Database(int capacity, int blockSize) {
     this->blockSize = blockSize;
 }
 
-void Database:: addNewBlock(Block blk){
+void Database:: addNewBlock(DataBlock blk){
     this->blocksList.push_back(blk);
 }
 
-void DataBase::addRecord(Record rec) {
+void Database::addRecord(Record record)
+{
+}
+
+void Database::addRecord(Record rec) {
     if (sizeof(rec) > this->blockSize) {
         cout << "This record's size is larger than the block size"<<endl;
         return;
@@ -33,11 +37,11 @@ void DataBase::addRecord(Record rec) {
     blocksList.back().insertRecord(rec);
 }
 
-int DataBase::getNumBlocks() {
+int Database::getNumBlocks() {
     return this->blocksList.size();
 }
 
-unsigned int DataBase::getSize() {
+unsigned int Database::getSize() {
     return sizeof(*this);
 }
 

@@ -4,21 +4,23 @@
 
 #pragma once
 #include "storage.h"
+#include "datablock.h"
 #include "vector"
 
 using namespace std;
 
 class Database{
 private:
-    vector<Block> freeBlocks;
-    vector<Block> blocksList;
+    vector<DataBlock> freeBlocks;
+    vector<DataBlock> blocksList;
 
 public:
     Database(int capacity, int blockSize);
     static int MAXSIZE;
     int blockSize;
-    void addNewBlock(Block blk);
+    void addNewBlock(DataBlock blk);
     void addRecord(Record record);
     int getNumBlocks();
     unsigned int getSize();
 };
+

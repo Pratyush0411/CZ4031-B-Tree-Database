@@ -10,7 +10,6 @@ class DataBlock : public Block{
 
 private:
     int numRecords;
-    bool hasCapacity(Record rec);
 
 public:
     vector<Record> recordList;
@@ -19,6 +18,6 @@ public:
     void insertRecord (Record rec);
     void deleteRecord (Record rec);
     void printBlock();
-
+    bool hasCapacity(Record rec);
 };
 
