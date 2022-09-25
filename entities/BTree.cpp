@@ -10,7 +10,6 @@ using namespace std;
 
 
 int Node::MAXSIZE = 3;
-int MAXSIZEE = 3;
 
 Node::Node(bool isLeaf) {
     this->isLeaf = isLeaf;
@@ -310,6 +309,7 @@ void BPTree::insert(int x) {
 
 void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
     //if node is root
+    int MAX = Node::MAXSIZE;
     if(this->rootNode == cursor){
         if(cursor->getSize() == 1){
             //cursor moves to next
@@ -367,7 +367,7 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
         cursor->setPtr(i, cursor->getPtr(i+1));
     }
     cursor->setSize(cursor->getSize()-1);
-    if(cursor->getSize() >= ((MAXSIZEE+1)/2 -1)){
+    if(cursor->getSize() >= ((MAX+1)/2 -1)){
         return;
     }
     if(cursor == this->rootNode){
@@ -385,7 +385,7 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
     }
     if(left>=0){
         Node *leftNode = parent->getPtr(left);
-        if(leftNode->getSize() >= (MAXSIZEE+1)/2){
+        if(leftNode->getSize() >= (MAX+1)/2){
             //fit here
             //key
             for(int i=cursor->getSize(); i>0; i--){
@@ -405,7 +405,7 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
     }
     if(right<=parent->getSize()){
         Node *rightNode = parent->getPtr(right);
-        if(rightNode->getSize() >= (MAXSIZEE+1)/2){
+        if(rightNode->getSize() >= (MAX+1)/2){
             //fit here
             //key
             cursor->setKey(cursor->getSize(), parent->getKey(num));
@@ -461,6 +461,7 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
 
 
 void BPTree::remove(int x){
+    int MAX = Node::MAXSIZE;
     cout<<"\nRemoving "<< x <<endl;
     if(this->rootNode == NULL){
         //empty
@@ -489,7 +490,7 @@ void BPTree::remove(int x){
     }
 
     bool f = false;
-    int position;
+    int position=0;
     for(position=0;position<cursor->getSize();position++){
         if(cursor->getKey(position) == x){
             f = true;
@@ -509,7 +510,7 @@ void BPTree::remove(int x){
 
     if(this->rootNode == cursor){
         //empty tree
-        for(int i=0;i<MAXSIZEE+1;i++){
+        for(int i=0;i<MAX+1;i++){
             cursor->setPtr(i, NULL);
         }
         if(cursor->getSize()==0){
@@ -530,7 +531,7 @@ void BPTree::remove(int x){
     cursor->setPtr(cursor->getSize(), cursor->getPtr(cursor->getSize()+1));
     cursor->setPtr(cursor->getSize()+1, NULL);
 
-    if(cursor->getSize() >= ((MAXSIZEE+1)/2) ){
+    if(cursor->getSize() >= ((MAX+1)/2) ){
         //no need borrow
         return;
     }
@@ -540,7 +541,7 @@ void BPTree::remove(int x){
     if(left >= 0){
         Node *leftNode = parent->getPtr(left);
         //check if can trf
-        if(leftNode->getSize() >= ( (MAXSIZEE+1)/2 + 1) ){
+        if(leftNode->getSize() >= ( (MAX+1)/2 + 1) ){
             for(int i=cursor->getSize();i>0;i--){
                 cursor->setKey(i, i-1);
             }
@@ -566,7 +567,7 @@ void BPTree::remove(int x){
     if(right <= parent->getSize()){
         Node *rightNode = parent->getPtr(right);
         //check if can trf
-        if(rightNode->getSize() >= ((MAXSIZEE+1)/2 + 1)){
+        if(rightNode->getSize() >= ((MAX+1)/2 + 1)){
             cursor->setSize(cursor->getSize()+1);
             //ptr to next leaf
             cursor->setPtr(cursor->getSize(), cursor->getPtr(cursor->getSize()-1));
