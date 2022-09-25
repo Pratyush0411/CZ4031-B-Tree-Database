@@ -6,8 +6,6 @@
 #include "vector"
 
 class DataBlock : public Block{
-
-
 private:
     int numRecords;
 
@@ -15,8 +13,8 @@ public:
     vector<Record> recordList;
     DataBlock(int blockSize);
     // ~ DataBlock();
-    void insertRecord (Record rec);
-    void deleteRecord (Record rec);
+    Record* insertRecord (Record rec);
+    //void deleteRecord (Record rec);
     void printBlock();
     bool hasCapacity(Record rec);
 };

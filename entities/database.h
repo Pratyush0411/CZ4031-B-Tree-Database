@@ -6,6 +6,7 @@
 #include "storage.h"
 #include "datablock.h"
 #include "vector"
+#include <utility>  
 
 using namespace std;
 
@@ -13,13 +14,11 @@ class Database{
 private:
     vector<DataBlock> freeBlocks;
     vector<DataBlock> blocksList;
-
+    int MAXSIZE;
+    int blockSize;
 public:
     Database(int capacity, int blockSize);
-    static int MAXSIZE;
-    int blockSize;
-    void addNewBlock(DataBlock blk);
-    void addRecord(Record record);
+    pair<DataBlock*,Record*> addRecord(Record record);
     int getNumBlocks();
     unsigned int getSize();
 };
