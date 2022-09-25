@@ -11,30 +11,23 @@ Database::Database(int capacity, int blockSize) {
     this->blockSize = blockSize;
 }
 
-void Database:: addNewBlock(DataBlock blk){
-    this->blocksList.push_back(blk);
-}
-
-void Database::addRecord(Record record)
-{
-}
-
-void Database::addRecord(Record rec) {
+pair<DataBlock*, Record*> Database::addRecord(Record rec) {
     if (sizeof(rec) > this->blockSize) {
         cout << "This record's size is larger than the block size"<<endl;
-        return;
+        return{NULL,NULL};
     }
 
     if (this->blocksList.size() == 0 || blocksList.back().hasCapacity(rec)==false) {
         if (sizeof(*this) + this->blockSize > this->MAXSIZE) {
             cout << "Disk storage is full, cannot allocate another block" << endl;
-            return;
+            return{ NULL,NULL };
         }
         DataBlock blk(this->blockSize);
         blocksList.push_back(blk);
     }
 
-    blocksList.back().insertRecord(rec);
+    Record* recPointer = blocksList.back().insertRecord(rec);
+    return{ &blocksList.back(),recPointer };
 }
 
 int Database::getNumBlocks() {
