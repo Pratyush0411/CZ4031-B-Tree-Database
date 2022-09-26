@@ -20,12 +20,12 @@ bool Record:: operator == (Record rhs){
     }
 
 }
-/*
+
 Record::Record(string tconst, float averageRating, uint numVotes) {
     strcpy(this->tconst,tconst.c_str());
     this->avgRating = averageRating;
     this->numVotes = numVotes;
 
 }
-*/
+
 int Block::MAXSIZE = 200;
