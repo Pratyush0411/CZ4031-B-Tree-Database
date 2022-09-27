@@ -393,7 +393,7 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
     for(int i=num; i<=cursor->getSize(); i++){
         //last one is to be removed
         //cout<<"shift key"<<endl;
-        cursor->setKey(i-1, cursor->getKey(i));
+        cursor->setKey(i, cursor->getKey(i+1));
         //cout<<i<<endl;
     }
     //cout<<"here"<<endl;
@@ -414,12 +414,15 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
     if(cursor == this->rootNode){
         return;
     }
-    //else, try fitting
+    //No need further processing
+    //else, need.
     Node* parent = cursor->getParent();
     int left,right;
     for(num=0; num < parent->getSize()+1; num++){
         if(parent->getPtr(num) == cursor){
             left = num-1;
+            //right = num+1;
+            //cos already deleted
             right = num+1;
             break;
         }
@@ -484,11 +487,9 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
     else if(right<=parent->getSize()){
         Node *rightNode = parent->getPtr(right);
         //for key
-        cout<<"Cursor size "<<cursor->getSize()<<endl;
         //cursor->setKey(cursor->getSize(), parent->getKey(right)-1);
-
         //ensure integrity of rightside key
-        rightNode->setKey(0, findSmallestLB(rightNode));
+        //rightNode->setKey(0, findSmallestLB(rightNode));
 
         //for(int i=cursor->getSize()+1, j=0; j<rightNode->getSize(); j++)
         cout<<"rightNode0 is "<<rightNode->getKey(0)<<endl;
@@ -507,6 +508,15 @@ void BPTree::removeFromInternal(int x, Node* cursor, Node* child){
         }
         cursor->setSize(cursor->getSize()+rightNode->getSize()+1);
         rightNode->setSize(0);
+        //update keys
+        //cout<<"next node "<<(cursor->returnNextNode(cursor->getKey(1)))->getKey(0)<<endl;
+        for(int no=0; no<=cursor->getSize(); no++){
+            Node *nextNode = cursor->returnNextNode(cursor->getKey(no));
+            cout<<"Next node "<<nextNode->getKey(0)<<endl;
+            //cursor->setKey(no, findSmallestLB(nextNode->getPtr(0)));
+            cursor->setKey(no, nextNode->getKey(0));
+        }
+
         //recursively del.
         removeFromInternal(parent->getKey(right-1), parent, rightNode);
     }
@@ -800,7 +810,7 @@ Node *BPTree::search(float x, bool flag, bool printer)
                 cout <<"Found key\n";
                 cout << "Ptr: " <<cursor->getPtr(i) << "\n";
                 cout << "Size:" <<cursor->getSize() << "\n";
-                
+
             }
             return cursor;
         }

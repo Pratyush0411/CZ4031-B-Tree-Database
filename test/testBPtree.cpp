@@ -10,7 +10,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <cstring>
-#include "../entities/BTree.cpp"
+//#include "../entities/BTree.cpp"
 #include <typeinfo>
 
 #include <cstring>
@@ -52,11 +52,12 @@ void testInsertion(){
     //b->remove(8);
     //can't. why?
     //b->display();
-    b->search(2,false, true);
+    //b->search(2,false, true);
 
 }
 int main(){
     testInsertion();
+
 
     ifstream dataFile("C:/Users/colin/source/repos/cz4031-database-system-principles/data/data.tsv");
 
@@ -71,7 +72,7 @@ int main(){
             }
         Record record;
         string tempLine;
-        
+
         }
     }
 
