@@ -3,6 +3,15 @@
 //
 
 #include "../entities/Btree.cpp"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <tuple>
+#include <unordered_map>
+#include <cstring>
+#include "../entities/BTree.cpp"
+#include <typeinfo>
 
 #include <cstring>
 
@@ -32,8 +41,8 @@ void testInsertion(){
     //change insertion to split 2-1
     //b->remove(1);
     //b->display();
-    b->remove(0);
-    b->display();
+    //b->remove(0);
+    //b->display();
     //b->remove(0);
     //b->display();
 
@@ -43,10 +52,27 @@ void testInsertion(){
     //b->remove(8);
     //can't. why?
     //b->display();
-
+    b->search(2,false, true);
 
 }
 int main(){
     testInsertion();
+
+    ifstream dataFile("C:/Users/colin/source/repos/cz4031-database-system-principles/data/data.tsv");
+
+    vector<tuple<void *, uint>> dataset;
+    bool flag = true;
+    if (dataFile.is_open()){
+        string line;
+        while(getline(dataFile,line)){
+            if(flag){
+                flag = false;
+                continue;
+            }
+        Record record;
+        string tempLine;
+        
+        }
+    }
 
 }

@@ -76,4 +76,6 @@ public:
     Node *splitAndReturnNewLeaf(Node *orgNode, int x);
 
     int findSmallestLB(Node *cursor);
+
+    Node *search(float x, bool flag, bool pointer);
 };
