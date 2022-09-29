@@ -7,18 +7,20 @@
 #include "datablock.h"
 #include "vector"
 #include <utility>  
+#include<unordered_set>
 
 using namespace std;
 
 class Database{
 private:
-    vector<DataBlock> freeBlocks;
+    unordered_set<int> freeBlocks;
     vector<DataBlock> blocksList;
     int MAXSIZE;
     int blockSize;
 public:
     Database(int capacity, int blockSize);
     pair<DataBlock*,Record*> addRecord(Record record);
+    void deleteRecordByNumvotes(int numVotes);
     int getNumBlocks();
     unsigned int getSize();
 };

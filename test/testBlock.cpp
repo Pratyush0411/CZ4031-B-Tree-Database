@@ -17,7 +17,7 @@ int main(){
     ////blk1->deleteRecord(*rec1);
     //blk1->printBlock();
     Record* rec1 = new Record("t00000000",9.5,23);
-    Record* rec2 = new Record("t00000001",9.0,20);
+    //Record* rec2 = new Record("t00000001",9.0,20);
     int DbSize = 1000;
     int blockSize = 100;
     Database* db = new Database(DbSize, blockSize);
