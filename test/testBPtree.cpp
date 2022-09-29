@@ -29,7 +29,6 @@ void testInsertion(){
         b->insert(i*1);
     }
     b->display();
-    //change insertion to split 2-1
     //b->remove(1);
     //b->display();
     b->remove(0);
@@ -37,12 +36,7 @@ void testInsertion(){
     //b->remove(0);
     //b->display();
 
-    //issue when removing from first node
-    //b->remove(32);
-    //update parent key for when removing from rightmost node
-    //b->remove(8);
-    //can't. why?
-    //b->display();
+
 
 
 }
