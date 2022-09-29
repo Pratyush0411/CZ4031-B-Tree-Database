@@ -40,29 +40,17 @@ void testInsertion(){
     b->display();
     //b->remove(1);
     //b->display();
-    //b->remove(0);
+    b->remove(12);
     //b->display();
     //b->remove(0);
-    //b->display();
-
-<<<<<<< HEAD
-    //issue when removing from first node
-    //b->remove(32);
-    //update parent key for when removing from rightmost node
-    //b->remove(8);
-    //can't. why?
-    //b->display();
-    //b->search(2,false, true);
-=======
-
-
->>>>>>> deletionTest
+    b->display();
 
 }
 int main(){
     testInsertion();
 
 
+    /*
     ifstream dataFile("C:/Users/colin/source/repos/cz4031-database-system-principles/data/data.tsv");
 
     vector<tuple<void *, uint>> dataset;
@@ -79,5 +67,5 @@ int main(){
 
         }
     }
-
+*/
 }
