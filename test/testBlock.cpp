@@ -7,6 +7,14 @@
 #include "../entities/database.h"
 #include "../entities/database.cpp"
 #include <cstring>
+#include "../entities/Btree.cpp"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <tuple>
+#include <unordered_map>
+#include <typeinfo>
 
 int main(){
 
@@ -18,10 +26,11 @@ int main(){
     //blk1->printBlock();
     Record* rec1 = new Record("t00000000",9.5,23);
     //Record* rec2 = new Record("t00000001",9.0,20);
-    int DbSize = 1000;
+    int DbSize = 100000000;
     int blockSize = 100;
     Database* db = new Database(DbSize, blockSize);
     pair<DataBlock*, Record*> p1 = db->addRecord(*rec1);
     if(p1.second != NULL)
         cout << p1.second->tconst<<" "<<p1.second->avgRating<<" "<<p1.second->numVotes<<endl;
+
 }
