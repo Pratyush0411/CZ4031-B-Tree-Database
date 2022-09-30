@@ -63,9 +63,9 @@ public:
 
     void insert(int);
 
-    void removeFromInternal(int, Node*, Node*);
+    int removeFromInternal(int, Node*, Node*);
 
-    void remove(int);
+    int remove(int);
 
     void display();
 

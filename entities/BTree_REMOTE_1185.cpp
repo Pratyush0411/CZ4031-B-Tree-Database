@@ -327,12 +327,10 @@ void BPTree::removeIntNode(Node* cursor){
 }
 */
 
-int BPTree::removeFromInternal(int x, Node* parent, Node* child){
+void BPTree::removeFromInternal(int x, Node* parent, Node* child){
     //if node is root
     int MAX = Node::MAXSIZE;
     //cout<<"x is "<<x<<endl;
-    int counter=0;
-
     if(this->rootNode == parent){
         if(parent->getSize() == 1){
             //need to move root.
@@ -343,7 +341,7 @@ int BPTree::removeFromInternal(int x, Node* parent, Node* child){
                 this->rootNode = parent->getPtr(0);
             }
             parent->deleteKeyPtrNode();
-            return counter;
+            return;
         }
     }
 
@@ -386,10 +384,10 @@ int BPTree::removeFromInternal(int x, Node* parent, Node* child){
     }
     parent->setSize(parent->getSize()-1);
     if(parent->getSize() >= (MAX/2)){
-        return counter;
+        return;
     }
     if(parent == this->rootNode){
-        return counter;
+        return;
     }
     //else, try borrow
     Node *nextParent = parent->getParent();
@@ -426,7 +424,7 @@ int BPTree::removeFromInternal(int x, Node* parent, Node* child){
             cursor->setSize(cursor->getSize()+1);
             leftNode->setSize(leftNode->getSize()-1);
             */
-            return counter;
+            return;
         }
     }
     else if(right<=nextParent->getSize()){
@@ -449,7 +447,7 @@ int BPTree::removeFromInternal(int x, Node* parent, Node* child){
                 rightNode->setPtr(i, rightNode->getPtr(i+1));
             }
             rightNode->setSize(rightNode->getSize()-1);
-            return counter;
+            return;
         }
     }
     //have to merge
@@ -466,9 +464,8 @@ int BPTree::removeFromInternal(int x, Node* parent, Node* child){
         leftNode->setSize(leftNode->getSize() + parent->getSize() + 1);
         //cursor->setSize(0);
         //recursion
-        counter += removeFromInternal(nextParent->getKey(left), nextParent, parent);
+        removeFromInternal(nextParent->getKey(left), nextParent, parent);
         parent->deleteKeyPtrNode();
-        counter++;
     }
     else if(right<=nextParent->getSize()){
         Node *rightNode = nextParent->getPtr(right);
@@ -499,22 +496,20 @@ int BPTree::removeFromInternal(int x, Node* parent, Node* child){
         parent->setSize(parent->getSize()+rightNode->getSize()+1);
         //rightNode->setSize(0);
         //recursively del.
-        counter += removeFromInternal(parent->getKey(right-1), nextParent, rightNode);
+        removeFromInternal(parent->getKey(right-1), nextParent, rightNode);
         rightNode->deleteKeyPtrNode();
-        counter++;
     }
-    return counter;
 }
 
 
-int BPTree::remove(int x){
+void BPTree::remove(int x){
     int MAX = Node::MAXSIZE;
-    int counter =0;
+    int deletedNodes =0;
     cout<<"\nRemoving "<< x <<endl;
     if(this->rootNode == NULL){
         //empty
         cout<<"Empty."<<endl;
-        return counter;
+        return;
     }
 
     //else,
@@ -553,7 +548,7 @@ int BPTree::remove(int x){
     if(!f || (cursor->getKey(position) != x)){
         //key doesn't exist
         cout<<"\nCannot find key"<<endl;
-        return counter;
+        return;
     }
 
     for(int i = position; i<cursor->getSize()-1; i++){
@@ -577,13 +572,13 @@ int BPTree::remove(int x){
             this->rootNode = NULL;
             //rootNode = NULL;
         } else {
-            return counter;
+            return;
         }
     }
     //Non-root
     else if(cursor->getSize() >= (MAX+1)/2 ){
         // more than min. No further processing
-        return counter;
+        return;
     } else {
         // need to borrow
         if(left >= 0){
@@ -600,7 +595,7 @@ int BPTree::remove(int x){
                 cursor->setSize(cursor->getSize()+1);
                 leftNode->setSize(leftNode->getSize()-1);
                 parent->setKey(left, cursor->getKey(0));
-                return counter;
+                return;
             }
         }
         else if(right <= parent->getSize()){
@@ -617,7 +612,7 @@ int BPTree::remove(int x){
                 }
                 rightNode->setSize(rightNode->getSize()-1);
                 parent->setKey(right-1, rightNode->getKey(0));
-                return counter;
+                return;
             }
         }
     }
@@ -634,9 +629,8 @@ int BPTree::remove(int x){
         leftNode->setPtr(MAX,cursor->getPtr(MAX));
         //leftNode->setParent(parent);
         //settle internal nodes
-        counter += removeFromInternal(parent->getKey(left), parent, cursor);
+        removeFromInternal(parent->getKey(left), parent, cursor);
         cursor->deleteKeyPtrNode();
-        counter++;
     }
     //node is leftmost alr.
     else if(right <= parent->getSize()){
@@ -650,11 +644,9 @@ int BPTree::remove(int x){
         cursor->setPtr(MAX, rightNode->getPtr(MAX));
         //rightNode->getPtr(MAX)? or (last key) aka getSize?
         //settle internal nodes
-        counter += removeFromInternal(parent->getKey(right-1), parent, rightNode);
+        removeFromInternal(parent->getKey(right-1), parent, rightNode);
         rightNode->deleteKeyPtrNode();
-        counter++;
     }
-    return counter;
 }
 
 /*
