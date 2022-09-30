@@ -14,7 +14,7 @@ Database::Database(int capacity, int blockSize) {
 pair<DataBlock*, int> Database::addRecord(Record rec) {
     if (sizeof(rec) > this->blockSize) {
         cout << "This record's size is larger than the block size"<<endl;
-        return{NULL,NULL};
+        return{NULL,-1};
     }
 
     // insert Record into a block that has unused space (for a deleted record);
@@ -32,7 +32,7 @@ pair<DataBlock*, int> Database::addRecord(Record rec) {
     if (this->blocksList.size() == 0 || blocksList.back().hasCapacity(rec)==false) {
         if (this->blockSize *(blocksList.size()+1) > this->MAXSIZE) {
             cout << "Disk storage is full, cannot allocate another block" << endl;
-            return{ NULL,NULL };
+            return{ NULL,-1 };
         }
         DataBlock blk(this->blockSize);
         blocksList.push_back(blk);
