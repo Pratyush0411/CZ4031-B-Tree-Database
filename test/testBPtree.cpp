@@ -40,10 +40,12 @@ void testInsertion(){
     b->display();
     //b->remove(1);
     //b->display();
-    b->remove(12);
+    int counter;
+    counter = b->remove(0);
     //b->display();
     //b->remove(0);
     b->display();
+    cout<<counter<<" nodes deleted"<<endl;
 
 }
 int main(){
