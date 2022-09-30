@@ -4,18 +4,24 @@
 
 #pragma once
 #include "storage.h"
+#include "datablock.h"
 #include "vector"
+#include <utility>  
+#include<unordered_set>
 
 using namespace std;
 
 class Database{
 private:
-    vector<Block> freeBlocks;
-    vector<Block> blocksList;
-
+    unordered_set<int> freeBlocks;
+    vector<DataBlock> blocksList;
+    int MAXSIZE;
+    int blockSize;
 public:
-
-    static int MAXSIZE;
-    void addNewBlock(Block blk);
-
+    Database(int capacity, int blockSize);
+    pair<DataBlock*,Record*> addRecord(Record record);
+    void deleteRecordByNumvotes(int numVotes);
+    int getNumBlocks();
+    unsigned int getSize();
 };
+
