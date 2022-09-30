@@ -13,14 +13,15 @@ using namespace std;
 
 class Database{
 private:
-    unordered_set<int> freeBlocks;
+    unordered_set<DataBlock*> freeBlocks;
     vector<DataBlock> blocksList;
     int MAXSIZE;
     int blockSize;
 public:
     Database(int capacity, int blockSize);
-    pair<DataBlock*,Record*> addRecord(Record record);
+    pair<DataBlock*,int> addRecord(Record record);
     void deleteRecordByNumvotes(int numVotes);
+    bool deleteRecordfromBtree(DataBlock* blkPointer, int recordIndex);
     int getNumBlocks();
     unsigned int getSize();
 };

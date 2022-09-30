@@ -21,7 +21,11 @@ int main(){
     int DbSize = 1000;
     int blockSize = 100;
     Database* db = new Database(DbSize, blockSize);
-    pair<DataBlock*, Record*> p1 = db->addRecord(*rec1);
-    if(p1.second != NULL)
-        cout << p1.second->tconst<<" "<<p1.second->avgRating<<" "<<p1.second->numVotes<<endl;
+    pair<DataBlock*, int> p1 = db->addRecord(*rec1);
+    if (p1.first != NULL) {
+        cout << p1.first->recordList[p1.second].tconst << endl;
+        cout << p1.first->recordList[p1.second].avgRating << endl;
+        cout << p1.first->recordList[p1.second].numVotes << endl;
+    }
+
 }

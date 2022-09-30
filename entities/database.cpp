@@ -11,7 +11,7 @@ Database::Database(int capacity, int blockSize) {
     this->blockSize = blockSize;
 }
 
-pair<DataBlock*, Record*> Database::addRecord(Record rec) {
+pair<DataBlock*, int> Database::addRecord(Record rec) {
     if (sizeof(rec) > this->blockSize) {
         cout << "This record's size is larger than the block size"<<endl;
         return{NULL,NULL};
@@ -19,13 +19,13 @@ pair<DataBlock*, Record*> Database::addRecord(Record rec) {
 
     // insert Record into a block that has unused space (for a deleted record);
     if (freeBlocks.size()) {
-        int id = *freeBlocks.begin();
-        Record* recPointer = blocksList[id].insertRecord(rec);
-        if (blocksList[id].getNumFreeRecords() == 0) {
+        DataBlock* blk = *freeBlocks.begin();
+        int recIndex = blk->insertRecord(rec);
+        if (blk->getNumFreeRecords() == 0) {
             freeBlocks.erase(freeBlocks.begin());
         }
         //cout << "added to " << id << " block"<<endl;
-        return { &blocksList[id],recPointer };
+        return { blk,recIndex };
     }
 
     // add new block
@@ -39,17 +39,25 @@ pair<DataBlock*, Record*> Database::addRecord(Record rec) {
     }
 
     // insert Record into the last block;
-    Record* recPointer = blocksList.back().insertRecord(rec);
+    int recIndex = blocksList.back().insertRecord(rec);
     //cout << "added to the last block"<<endl;
-    return{ &blocksList.back(),recPointer };
+    return{ &blocksList.back(),recIndex };
 }
 
 void Database::deleteRecordByNumvotes(int numVotes){
     for (int i = 0; i < blocksList.size(); i++) {
         if (blocksList[i].deleteRecordByNumvotes(numVotes)) {
-            freeBlocks.insert(i);
+            freeBlocks.insert(&blocksList[i]);
         }
     }
+}
+
+bool Database::deleteRecordfromBtree(DataBlock* blkPointer, int recordIndex){
+    if (blkPointer->deleteRecordByIndex(recordIndex)) {
+        freeBlocks.insert(blkPointer);
+        return true;
+    }
+    return false;
 }
 
 int Database::getNumBlocks() {
