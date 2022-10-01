@@ -7,56 +7,69 @@
 using namespace std;
 bool DataBlock ::hasCapacity(Record rec) {
 
-    int recordSize = sizeof(rec);
-    int currentBlockSize = sizeof(*this);
-
-    if (recordSize + currentBlockSize <= MAXSIZE){
+    int recordSize = sizeof(rec) + sizeof(int);
+    int currentBlockSize = (recordList.size()-freeRecords.size())*recordSize;
+    //cout << recordSize<< " "<< currentBlockSize<<;
+    if (recordSize + currentBlockSize  <= MAXSIZE) {
         return true;
     }
-    else
-        return false;
+    return false;
+}
+
+int DataBlock::getNumFreeRecords()
+{
+    return freeRecords.size();
 }
 
 
-void DataBlock::insertRecord(Record rec) {
+int DataBlock::insertRecord(Record rec) {
 
     if (this->hasCapacity(rec)){
-        this->recordList.push_back(rec);
-        this->numRecords ++;
-    }
-}
-
-void DataBlock::deleteRecord(Record rec) {
-
-    int pos = 0;
-    bool foundFlag = false;
-    for (Record iter: this->recordList){
-        if (iter == rec)
-        {
-
-            foundFlag = true;
-            break;
+        if (freeRecords.size() > 0) {
+            int id = freeRecords.front();
+            freeRecords.pop();
+            recordList[id] = rec;
+            return id;
         }
-        else
-            pos++;
-
+        else {
+            this->recordList.push_back(rec);
+            return this->recordList.size()-1;
+        }
     }
-    if (foundFlag) {
-        cout << "Erasing data .." << endl;
-        this->recordList.erase(recordList.begin() + pos);
-    }
-
-
+    return -1;
 }
+
+bool DataBlock::deleteRecordByNumvotes(int numVotes)
+{
+    bool ans = false;
+    for (int j = 0; j < recordList.size(); j++) {
+        if (recordList[j].isDeleted == false && recordList[j].numVotes == numVotes) {
+            recordList[j].isDeleted = true;
+            freeRecords.push(j);
+            ans = true;
+        }
+    }
+    return ans;
+}
+
+bool DataBlock::deleteRecordByIndex(int index)
+{
+    if(recordList[index].isDeleted == true) return false;
+    recordList[index].isDeleted = true;
+    freeRecords.push(index);
+    return true;
+}
+
 
 void DataBlock::printBlock() {
-    for (Record rec:this->recordList){
-        cout << rec.tconst << " " <<rec.avgRating << " " <<rec.numVotes << endl;
+    for (Record& rec:this->recordList){
+        if(rec.isDeleted==false)
+            cout << rec.tconst << " " <<rec.avgRating << " " <<rec.numVotes << endl;
     }
+    cout << endl;
 }
 
 
-DataBlock::DataBlock() {
-
-    this->numRecords = 0;
+DataBlock::DataBlock(int blockSize) {
+    this->MAXSIZE = blockSize;
 }

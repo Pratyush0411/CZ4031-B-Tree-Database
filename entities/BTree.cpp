@@ -694,6 +694,7 @@ void BPTree::remove1(int x){
 */
 
 void BPTree::display() {
+
 //    if (cursor != NULL) {
 //        for (int i = 0; i < cursor->getSize(); i++) {
 //            cout << cursor->getKey(i) << " ";
@@ -732,6 +733,75 @@ void BPTree::display() {
     }
 
 
+}
+
+Node *BPTree::search(float x, bool flag, bool printer)
+{
+    if (rootNode == NULL)
+    {
+        // Empty tree
+        cout <<"Tree is empty\n";
+    }
+    else
+    {
+        Node* cursor = rootNode;
+        while (cursor->isLeaf1() == false)
+        {
+            for(int i =0; i<cursor->getSize(); i++)
+            {
+                if(x < cursor->getKey(i))
+                {
+                    if(printer == true)
+                    {
+                        for (int j =0; j<cursor->getSize();j++)
+                        {
+                            cout << "1: ";
+                            cout << cursor->getKey(j) <<" ";
+                        }
+                        cout << "\n";
+                    }
+                    cursor = cursor->getPtr(i);
+                    break;
+                }
+                if(i == cursor->getSize()-1)
+                {
+                    if(printer == true)
+                    {
+                        for (int j =0; j<cursor->getSize();j++)
+                        {
+                            cout << "2: ";
+                            cout << cursor->getKey(j) <<" ";
+                        }
+                        cout << "\n";
+                    }
+                    cursor = cursor->getPtr(i+1);
+                    break;
+                }
+            }
+        }
+        if (printer == true)
+        {
+            for(int j = 0; j< cursor->getSize(); j++)
+            {
+                cout << "3: ";
+                cout << cursor->getKey(j) << " ";
+            }
+            cout << "\n";
+        }
+        for (int i =0; i< cursor->getSize(); i++)
+        {
+            if(cursor->getKey(i) == x)
+            {
+                cout <<"Found key\n";
+                cout << "Ptr: " <<cursor->getPtr(i) << "\n";
+                cout << "Size:" <<cursor->getSize() << "\n";
+
+            }
+            return cursor;
+        }
+    }
+    cout << "Not found\n";
+    return nullptr;
 }
 
 

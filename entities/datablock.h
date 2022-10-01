@@ -4,21 +4,24 @@
 #pragma once
 #include "storage.h"
 #include "vector"
+#include "queue"
 
-class DataBlock : Block{
-
-
+class DataBlock : public Block{
 private:
-    int numRecords;
-    bool hasCapacity(Record rec);
-
+    int MAXSIZE;
+    // a queue to store index of deleted Records, will fill these locations with new Records
+    queue<int> freeRecords;
+    // a vector to store all records;
+    
 public:
     vector<Record> recordList;
-    DataBlock();
+    DataBlock(int blockSize);
     // ~ DataBlock();
-    void insertRecord (Record rec);
-    void deleteRecord (Record rec);
+    int insertRecord (Record rec);
+    bool deleteRecordByNumvotes (int numVotes);
+    bool deleteRecordByIndex(int index);
     void printBlock();
-
+    bool hasCapacity(Record rec);
+    int getNumFreeRecords();
 };
 
