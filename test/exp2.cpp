@@ -57,6 +57,9 @@ int main()
         vector<string> fields = split(line, '\t');
         Record *trec = new Record(fields[0], stof(fields[1]), stoi(fields[2]));
         pair<DataBlock *, int> p1 = db1->addRecord(*trec);
+        if(curline%150 == 2){
+            cout << curline <<endl;
+        }
         btree->insert(stoi(fields[2]), p1);
         if (curline == 1070319)
             break;

@@ -15,6 +15,7 @@ Node::Node(bool isLeaf)
     this->isLeaf = isLeaf;
     key = new int[MAXNODESIZE];
     ptr = new Node *[MAXNODESIZE + 1];
+    dptr = new Duplicates *[MAXNODESIZE + 1];
     parent = NULL;
     size = 0;
     this->MAXNODESIZE = 3;
@@ -23,6 +24,10 @@ Node::Node(bool isLeaf)
 BPTree::BPTree()
 {
     this->rootNode = NULL;
+}
+
+Duplicates::Duplicates()
+{
 }
 
 bool Node::hasCapacity()
@@ -39,25 +44,30 @@ void Node::insertIntoLeafNode(int x, pair<DataBlock *, int> p1)
 {
     if (this->size < MAXNODESIZE)
     {
-        cout << "Inserting into the leaf node" << endl;
+        cout << "Inserting " << x << " into the leaf node" << endl;
         int i = 0;
-        while (x > this->key[i] && i < this->size)
+        while (x > this->key[i] && i < this->size) // Find which index to insert
             i++;
-        for (int j = this->size; j > i; j--)
+        for (int j = this->size; j > i; j--) // shift the rest of the keys to the right
         {
             this->key[j] = this->key[j - 1];
         }
+        cout << "Found and shifted other indexes" << endl;
         this->key[i] = x;
         this->size++;
-        this->ptr[this->size] = this->ptr[this->size - 1];
-        if (this->ptr[i] == NULL)
+        this->ptr[this->size] = this->ptr[this->size - 1]; // shifting pointers to make space
+        cout << this->getPtr(i) << endl;
+        if (this->getSize() == 0)
         { // If duplicates object does not exist
+            cout << "Duplicate object does not exist, creating" << endl;
             Duplicates *temp = new Duplicates();
             (temp->recptrs).insert(temp->recptrs.end(), p1);
+            cout << "Record pointer inserted" << endl;
             this->setDupPtr(i, temp);
         }
         else
         { // Duplicates object already exists
+            cout << "Duplicate object already exists, inserting" << endl;
             Duplicates *tp = this->getDPtr(i);
             (tp->recptrs).insert(tp->recptrs.end(), p1);
         }
@@ -199,7 +209,7 @@ Node *BPTree::searchLeafNode(int x)
 Node *BPTree::splitAndReturnNewLeaf(Node *orgNode, int x)
 {
     Node *newNode = new Node(true);
-    int virtualNode[Node::MAXNODESIZE + 1];
+    int virtualNode[3 + 1]; // HARDCODED
 
     for (int i = 0; i < Node::MAXNODESIZE; i++)
     {
@@ -245,8 +255,8 @@ Node *BPTree::splitAndReturnNewInternal(Node *orgInternal, int x, Node *newChild
 {
     Node *newInternal = new Node(false);
     int MAX = Node::MAXNODESIZE;
-    int virtualKey[MAX + 1];
-    Node *virtualPointer[MAX + 2];
+    int virtualKey[3 + 1];       // HARDCODED
+    Node *virtualPointer[3 + 2]; // HARDCODED
     for (int i = 0; i < MAX; i++)
     {
         virtualKey[i] = orgInternal->getKey(i);
