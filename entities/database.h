@@ -14,10 +14,10 @@ using namespace std;
 class Database{
 private:
     unordered_set<DataBlock*> freeBlocks;
-    vector<DataBlock> blocksList;
     int MAXSIZE;
     int blockSize;
 public:
+    vector<DataBlock> blocksList;
     DataBlock* getFirstBlock();
     Database(int capacity, int blockSize);
     pair<DataBlock*,int> addRecord(Record record);

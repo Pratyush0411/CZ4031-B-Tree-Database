@@ -34,10 +34,10 @@ std::vector<std::string> split(const std::string &s, char delim)
 int main()
 {
     int DbSize1 = 500000000;
-    int blockSize1 = 200;
+    int blockSize1 = 500;
     Database *db1 = new Database(DbSize1, blockSize1);
     ifstream file;
-    int lineNum = 21;
+    int lineNum = 25;
     file.open("../Data/data.tsv");
     int curline = 0;
     string line;
@@ -48,23 +48,26 @@ int main()
         getline(file, line);
         if (curline == 1) // Exclude header line
         {
-            continue; 
+            continue;
         }
         vector<string> fields = split(line, '\t');
-        //cout << fields[0] << " " << fields[1] << " " << fields[2] << endl;
+        // cout << fields[0] << " " << fields[1] << " " << fields[2] << endl;
         Record *trec = new Record(fields[0], stof(fields[1]), stoi(fields[2]));
         pair<DataBlock *, int> p1 = db1->addRecord(*trec);
         if (curline == lineNum)
             break;
     }
     cout << "number of blocks in db: " << db1->getNumBlocks() << endl;
-    DataBlock* dbptr = db1->getFirstBlock();
+    DataBlock *dbptr = db1->getFirstBlock();
     dbptr->printBlock();
-    if(db1->deleteRecordfromBtree(dbptr,2)){
-        cout <<"Record deleted" << endl;
+    if (db1->deleteRecordfromBtree(dbptr, 2))
+    {
         dbptr->printBlock();
     };
 
+    cout << "Size of queue: " << sizeof(queue<int>) << endl;
+    cout << "Size of database: " << sizeof(db1) <<endl;
+    cout << "Size of recordlist: " << sizeof(dbptr->recordList) << endl; 
     // DataBlock* blk1 = new DataBlock(200);
     // blk1->insertRecord(*rec1);
     // blk1->insertRecord(*rec2);
@@ -83,5 +86,4 @@ int main()
     //     cout << p1.first->recordList[p1.second].avgRating << endl;
     //     cout << p1.first->recordList[p1.second].numVotes << endl;
     // }
-
 }

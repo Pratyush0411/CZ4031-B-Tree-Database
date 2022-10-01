@@ -74,7 +74,6 @@ bool Database::deleteRecordfromBtree(DataBlock *blkPointer, int recordIndex)
 
     if (blkPointer->deleteRecordByIndex(recordIndex))
     {
-        cout << "Updating freeblock" << endl;
         freeBlocks.insert(blkPointer);
         return true;
     }

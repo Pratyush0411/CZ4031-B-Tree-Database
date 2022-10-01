@@ -7,10 +7,10 @@
 using namespace std;
 bool DataBlock ::hasCapacity(Record rec) {
 
-    int recordSize = sizeof(rec);
+    int recordSize = sizeof(rec) + sizeof(int);
     int currentBlockSize = (recordList.size()-freeRecords.size())*recordSize;
     //cout << recordSize<< " "<< currentBlockSize<<;
-    if (recordSize + currentBlockSize <= MAXSIZE) {
+    if (recordSize + currentBlockSize  <= MAXSIZE) {
         return true;
     }
     return false;
@@ -54,7 +54,6 @@ bool DataBlock::deleteRecordByNumvotes(int numVotes)
 
 bool DataBlock::deleteRecordByIndex(int index)
 {
-    cout << recordList[index].isDeleted << " " << recordList[index].tconst << endl;
     if(recordList[index].isDeleted == true) return false;
     recordList[index].isDeleted = true;
     freeRecords.push(index);
