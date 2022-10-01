@@ -3,21 +3,21 @@
 //
 #include "vector"
 #include <queue>
-#include "../entities/storage.h"
+#include "storage.h"
 #include "BTree.h"
 
 using namespace std;
 
-// int Node::MAXSIZE = 3;
+int Node::MAXNODESIZE = 3;
 
 Node::Node(bool isLeaf)
 {
     this->isLeaf = isLeaf;
-    key = new int[MAXSIZE];
-    ptr = new Node *[MAXSIZE + 1];
+    key = new int[MAXNODESIZE];
+    ptr = new Node *[MAXNODESIZE + 1];
     parent = NULL;
     size = 0;
-    this->MAXSIZE = 3;
+    this->MAXNODESIZE = 3;
 }
 
 BPTree::BPTree()
@@ -27,7 +27,7 @@ BPTree::BPTree()
 
 bool Node::hasCapacity()
 {
-    if (this->size < MAXSIZE)
+    if (this->size < MAXNODESIZE)
     {
         return true;
     }
@@ -35,13 +35,9 @@ bool Node::hasCapacity()
         return false;
 }
 
-Duplicates *Node::insertIntoDuplicates(int key, pair<DataBlock *, int> p1)
-{
-}
-
 void Node::insertIntoLeafNode(int x, pair<DataBlock *, int> p1)
 {
-    if (this->size < MAXSIZE)
+    if (this->size < MAXNODESIZE)
     {
         cout << "Inserting into the leaf node" << endl;
         int i = 0;
@@ -58,10 +54,12 @@ void Node::insertIntoLeafNode(int x, pair<DataBlock *, int> p1)
         { // If duplicates object does not exist
             Duplicates *temp = new Duplicates();
             (temp->recptrs).insert(temp->recptrs.end(), p1);
-            this->setPtr(i, temp);
+            this->setDupPtr(i, temp);
         }
         else
         { // Duplicates object already exists
+            Duplicates *tp = this->getDPtr(i);
+            (tp->recptrs).insert(tp->recptrs.end(), p1);
         }
         this->ptr[this->size - 1] = NULL; // Should be getNextNode to point to next leaf node
     }
@@ -69,7 +67,7 @@ void Node::insertIntoLeafNode(int x, pair<DataBlock *, int> p1)
 
 void Node::insertIntoInternal(int x, Node *child)
 {
-    if (this->size < MAXSIZE)
+    if (this->size < MAXNODESIZE)
     {
         cout << "Inserting into the internal node" << endl;
 
@@ -126,9 +124,23 @@ Node *Node::getPtr(int i) const
     return this->ptr[i];
 }
 
+Duplicates *Node::getDPtr(int i) const
+{
+    if (this->getSize() < i)
+    {
+        return NULL;
+    }
+    return this->dptr[i];
+}
+
 void Node::setPtr(int i, Node *ptr)
 {
     this->ptr[i] = ptr;
+}
+
+void Node::setDupPtr(int i, Duplicates *dp1)
+{
+    this->dptr[i] = dp1;
 }
 
 Node *Node::getParent() const
@@ -162,6 +174,7 @@ Node *Node::returnNextNode(int x)
             }
         }
     }
+    return NULL;
 }
 
 void Node::display()
@@ -186,16 +199,16 @@ Node *BPTree::searchLeafNode(int x)
 Node *BPTree::splitAndReturnNewLeaf(Node *orgNode, int x)
 {
     Node *newNode = new Node(true);
-    int virtualNode[Node::MAXSIZE + 1];
+    int virtualNode[Node::MAXNODESIZE + 1];
 
-    for (int i = 0; i < Node::MAXSIZE; i++)
+    for (int i = 0; i < Node::MAXNODESIZE; i++)
     {
         virtualNode[i] = orgNode->getKey(i);
     }
     int i = 0;
-    while (x > virtualNode[i] && i < Node::MAXSIZE)
+    while (x > virtualNode[i] && i < Node::MAXNODESIZE)
         i++;
-    for (int j = Node::MAXSIZE + 1; j > i; j--)
+    for (int j = Node::MAXNODESIZE + 1; j > i; j--)
     {
         virtualNode[j] = virtualNode[j - 1];
     }
@@ -204,13 +217,13 @@ Node *BPTree::splitAndReturnNewLeaf(Node *orgNode, int x)
     //    for (int j =0; j <= Node::MAXSIZE; j++)
     //        cout << virtualNode[j]<<"\t";
     //    cout<<"\n";
-    orgNode->setSize((Node::MAXSIZE + 1) / 2);
-    newNode->setSize((Node::MAXSIZE + 1) - orgNode->getSize());
+    orgNode->setSize((Node::MAXNODESIZE + 1) / 2);
+    newNode->setSize((Node::MAXNODESIZE + 1) - orgNode->getSize());
 
     // resetting pointers
     orgNode->setPtr(orgNode->getSize(), newNode);
-    newNode->setPtr(newNode->getSize(), orgNode->getPtr(Node::MAXSIZE));
-    orgNode->setPtr(Node::MAXSIZE, NULL);
+    newNode->setPtr(newNode->getSize(), orgNode->getPtr(Node::MAXNODESIZE));
+    orgNode->setPtr(Node::MAXNODESIZE, NULL);
 
     // changing original leaf keys
     for (i = 0; i < orgNode->getSize(); i++)
@@ -231,7 +244,7 @@ Node *BPTree::splitAndReturnNewLeaf(Node *orgNode, int x)
 Node *BPTree::splitAndReturnNewInternal(Node *orgInternal, int x, Node *newChild)
 {
     Node *newInternal = new Node(false);
-    int MAX = Node::MAXSIZE;
+    int MAX = Node::MAXNODESIZE;
     int virtualKey[MAX + 1];
     Node *virtualPointer[MAX + 2];
     for (int i = 0; i < MAX; i++)
@@ -354,7 +367,7 @@ void BPTree::insert(int x, pair<DataBlock *, int> p1)
     if (this->rootNode == NULL)
     {
         this->rootNode = new Node(true);
-        this->rootNode->insertIntoLeafNode(x);
+        this->rootNode->insertIntoLeafNode(x, p1);
     }
     else
     {
@@ -363,7 +376,7 @@ void BPTree::insert(int x, pair<DataBlock *, int> p1)
 
         // if leaf has capacity then add to leaf
         if (leafNode->hasCapacity())
-            leafNode->insertIntoLeafNode(x);
+            leafNode->insertIntoLeafNode(x, p1);
         else
         {
             cout << "Splitting leaf node for " << x << endl;
@@ -402,7 +415,7 @@ void BPTree::removeIntNode(Node* cursor){
 int BPTree::removeFromInternal(int x, Node *parent, Node *child)
 {
     // if node is root
-    int MAX = Node::MAXSIZE;
+    int MAX = Node::MAXNODESIZE;
     // cout<<"x is "<<x<<endl;
     int counter = 0;
 
@@ -609,7 +622,7 @@ int BPTree::removeFromInternal(int x, Node *parent, Node *child)
 
 int BPTree::remove(int x)
 {
-    int MAX = Node::MAXSIZE;
+    int MAX = Node::MAXNODESIZE;
     int counter = 0;
     cout << "\nRemoving " << x << endl;
     if (this->rootNode == NULL)

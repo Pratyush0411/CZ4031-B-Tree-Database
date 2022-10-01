@@ -1,10 +1,10 @@
 //
 // Created by praty on 17/9/2022.
 //
-#include "../entities/datablock.h"
-#include "../entities/datablock.cpp"
 #pragma once
-class Duplicates : private Node
+#include "datablock.h"
+
+class Duplicates
 {
 public:
     vector<pair<DataBlock *, int>> recptrs;
@@ -21,7 +21,7 @@ class Node
     Duplicates **dptr;
 
 public:
-    static int MAXSIZE;
+    static int MAXNODESIZE;
 
     explicit Node(bool);
 
@@ -39,7 +39,11 @@ public:
 
     Node *getPtr(int i) const;
 
+    Duplicates *getDPtr(int i) const;
+
     void setPtr(int, Node *);
+
+    void setDupPtr(int, Duplicates *);
 
     Node *getParent() const;
 
@@ -54,8 +58,6 @@ public:
     void deleteKeyPtrNode();
 
     void display();
-
-    Duplicates *Node::insertIntoDuplicates(int key, pair<DataBlock *, int> p1);
 };
 
 class BPTree
