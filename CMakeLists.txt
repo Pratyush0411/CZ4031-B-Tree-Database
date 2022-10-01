@@ -4,4 +4,4 @@ project(Advanced_databases)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Advanced_databases
-        entities/storage.h entities/storage.cpp entities/datablock.h entities/datablock.cpp entities/BTree.cpp entities/database.h entities/database.cpp controllers/DatabaseManager.cpp test/testBlock.cpp test/testBPtree.cpp entities/BTree.h)
+        entities/storage.h entities/storage.cpp entities/datablock.h entities/datablock.cpp entities/BTree.cpp entities/database.h entities/database.cpp controllers/DatabaseManager.cpp test/testBlock.cpp test/testBPtree.cpp entities/BTree.h test/exp1.cpp test/exp2.cpp)

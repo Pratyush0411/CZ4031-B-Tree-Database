@@ -9,14 +9,10 @@ int Block::getBlkSize() {
     return sizeof(*this);
 }
 
-void Record::print() {
-    cout<<this->tconst<<" "<<this->avgRating<<" "<<this->numVotes<<endl;
-}
-
 bool Record:: operator == (Record rhs){
 
     if (this->avgRating == rhs.avgRating && strcmp(this->tconst,rhs.tconst)==0
-    && this->numVotes == rhs.numVotes){
+        && this->numVotes == rhs.numVotes){
         return true;
     }
     else{
@@ -32,4 +28,4 @@ Record::Record(string tconst, float averageRating, uint numVotes) {
 
 }
 
-int Block::MAXSIZE = 200;
+int Block::MAXSIZE = 500;

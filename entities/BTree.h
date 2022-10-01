@@ -5,6 +5,8 @@
 
 #include "vector"
 #include "storage.cpp"
+#include "datablock.cpp"
+#include "database.cpp"
 
 class DuplicateNode {
 private:
@@ -20,11 +22,11 @@ private:
 
     DuplicateNode *nextNode;
 public:
-    vector<Record *> recordArray;
+    vector<pair<DataBlock*, int>> recordArray;
 
     DuplicateNode();
 
-    void pushRecord(Record *);
+    void pushRecord(pair<DataBlock*, int>);
 
     void print();
 
@@ -54,9 +56,9 @@ public:
 
     explicit Node(bool);
 
-    bool checkAndInsertDuplicateIntoLeaf(int x, Record *rec);
+    bool checkAndInsertDuplicateIntoLeaf(int x, pair<DataBlock*, int>);
 
-    void insertIntoLeafNode(int, Record *);
+    void insertIntoLeafNode(int, pair<DataBlock*, int>);
 
     void insertIntoInternal(int, Node *);
 
@@ -87,10 +89,13 @@ public:
     Node *returnNextNode(int x);
 
     void display();
+
+    void deleteKeyPtrNode();
 };
 
 
 class BPTree {
+
     Node *rootNode;
 public:
     Node *getRootNode() const;
@@ -104,7 +109,7 @@ private:
 public:
     BPTree();
 
-    void insert(int, Record *);
+    void insert(int,pair<DataBlock*, int>);
     DuplicateNode* search(int);
 
     void display();
@@ -113,9 +118,12 @@ public:
 
     Node *splitAndReturnNewInternal(Node *orgInternal, int x, Node *newChild);
 
-    Node *splitAndReturnNewLeaf(Node *orgNode, int x, Record *);
+    Node *splitAndReturnNewLeaf(Node *orgNode, int x,pair<DataBlock*, int>);
 
     int findSmallestLB(Node *cursor);
 
 
+    int removeFromInternal(int x, Node *parent, Node *child);
+
+    int remove(int x);
 };

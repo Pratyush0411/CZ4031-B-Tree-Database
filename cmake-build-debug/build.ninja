@@ -61,6 +61,12 @@ build CMakeFiles/Advanced_databases.dir/entities/datablock.cpp.obj: CXX_COMPILER
   OBJECT_DIR = CMakeFiles\Advanced_databases.dir
   OBJECT_FILE_DIR = CMakeFiles\Advanced_databases.dir\entities
 
+build CMakeFiles/Advanced_databases.dir/entities/BTree.cpp.obj: CXX_COMPILER__Advanced_databases_Debug C$:/Users/praty/Desktop/Advanced$ databases/entities/BTree.cpp || cmake_object_order_depends_target_Advanced_databases
+  DEP_FILE = CMakeFiles\Advanced_databases.dir\entities\BTree.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\Advanced_databases.dir
+  OBJECT_FILE_DIR = CMakeFiles\Advanced_databases.dir\entities
+
 build CMakeFiles/Advanced_databases.dir/entities/database.cpp.obj: CXX_COMPILER__Advanced_databases_Debug C$:/Users/praty/Desktop/Advanced$ databases/entities/database.cpp || cmake_object_order_depends_target_Advanced_databases
   DEP_FILE = CMakeFiles\Advanced_databases.dir\entities\database.cpp.obj.d
   FLAGS = -g -std=gnu++14
@@ -79,6 +85,24 @@ build CMakeFiles/Advanced_databases.dir/test/testBlock.cpp.obj: CXX_COMPILER__Ad
   OBJECT_DIR = CMakeFiles\Advanced_databases.dir
   OBJECT_FILE_DIR = CMakeFiles\Advanced_databases.dir\test
 
+build CMakeFiles/Advanced_databases.dir/test/testBPtree.cpp.obj: CXX_COMPILER__Advanced_databases_Debug C$:/Users/praty/Desktop/Advanced$ databases/test/testBPtree.cpp || cmake_object_order_depends_target_Advanced_databases
+  DEP_FILE = CMakeFiles\Advanced_databases.dir\test\testBPtree.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\Advanced_databases.dir
+  OBJECT_FILE_DIR = CMakeFiles\Advanced_databases.dir\test
+
+build CMakeFiles/Advanced_databases.dir/test/exp1.cpp.obj: CXX_COMPILER__Advanced_databases_Debug C$:/Users/praty/Desktop/Advanced$ databases/test/exp1.cpp || cmake_object_order_depends_target_Advanced_databases
+  DEP_FILE = CMakeFiles\Advanced_databases.dir\test\exp1.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\Advanced_databases.dir
+  OBJECT_FILE_DIR = CMakeFiles\Advanced_databases.dir\test
+
+build CMakeFiles/Advanced_databases.dir/test/exp2.cpp.obj: CXX_COMPILER__Advanced_databases_Debug C$:/Users/praty/Desktop/Advanced$ databases/test/exp2.cpp || cmake_object_order_depends_target_Advanced_databases
+  DEP_FILE = CMakeFiles\Advanced_databases.dir\test\exp2.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\Advanced_databases.dir
+  OBJECT_FILE_DIR = CMakeFiles\Advanced_databases.dir\test
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Advanced_databases
@@ -87,7 +111,7 @@ build CMakeFiles/Advanced_databases.dir/test/testBlock.cpp.obj: CXX_COMPILER__Ad
 #############################################
 # Link the executable Advanced_databases.exe
 
-build Advanced_databases.exe: CXX_EXECUTABLE_LINKER__Advanced_databases_Debug CMakeFiles/Advanced_databases.dir/entities/storage.cpp.obj CMakeFiles/Advanced_databases.dir/entities/datablock.cpp.obj CMakeFiles/Advanced_databases.dir/entities/database.cpp.obj CMakeFiles/Advanced_databases.dir/controllers/DatabaseManager.cpp.obj CMakeFiles/Advanced_databases.dir/test/testBlock.cpp.obj
+build Advanced_databases.exe: CXX_EXECUTABLE_LINKER__Advanced_databases_Debug CMakeFiles/Advanced_databases.dir/entities/storage.cpp.obj CMakeFiles/Advanced_databases.dir/entities/datablock.cpp.obj CMakeFiles/Advanced_databases.dir/entities/BTree.cpp.obj CMakeFiles/Advanced_databases.dir/entities/database.cpp.obj CMakeFiles/Advanced_databases.dir/controllers/DatabaseManager.cpp.obj CMakeFiles/Advanced_databases.dir/test/testBlock.cpp.obj CMakeFiles/Advanced_databases.dir/test/testBPtree.cpp.obj CMakeFiles/Advanced_databases.dir/test/exp1.cpp.obj CMakeFiles/Advanced_databases.dir/test/exp2.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Advanced_databases.dir
