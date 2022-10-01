@@ -45,6 +45,8 @@ public:
 
     Node *returnNextNode(int x);
 
+    void deleteKeyPtrNode();
+
     void display();
 };
 
@@ -61,6 +63,10 @@ public:
 
     void insert(int);
 
+    void removeFromInternal(int, Node*, Node*);
+
+    void remove(int);
+
     void display();
 
     void changeInternalNode(int smallestLB, Node *parent, Node *newLeaf);
@@ -70,4 +76,6 @@ public:
     Node *splitAndReturnNewLeaf(Node *orgNode, int x);
 
     int findSmallestLB(Node *cursor);
+
+    Node *search(float x, bool flag, bool pointer);
 };
