@@ -11,10 +11,18 @@ Database::Database(int capacity, int blockSize) {
     this->blockSize = blockSize;
 }
 
-pair<DataBlock*, int> Database::addRecord(Record rec) {
-    if (sizeof(rec) > this->blockSize) {
-        cout << "This record's size is larger than the block size"<<endl;
-        return{NULL,-1};
+DataBlock *Database::getFirstBlock()
+{
+    return &this->blocksList[0];
+}
+
+pair<DataBlock *, int> Database::addRecord(Record rec)
+{
+    cout << "size of record is: " << sizeof(rec) << endl;
+    if (sizeof(rec) > this->blockSize)
+    {
+        cout << "This record's size is larger than the block size" << endl;
+        return {NULL, -1};
     }
 
     // insert Record into a block that has unused space (for a deleted record);
@@ -52,8 +60,12 @@ void Database::deleteRecordByNumvotes(int numVotes){
     }
 }
 
-bool Database::deleteRecordfromBtree(DataBlock* blkPointer, int recordIndex){
-    if (blkPointer->deleteRecordByIndex(recordIndex)) {
+bool Database::deleteRecordfromBtree(DataBlock *blkPointer, int recordIndex)
+{
+
+    if (blkPointer->deleteRecordByIndex(recordIndex))
+    {
+        cout << "Updating freeblock" << endl;
         freeBlocks.insert(blkPointer);
         return true;
     }
