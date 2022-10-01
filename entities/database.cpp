@@ -18,7 +18,6 @@ DataBlock *Database::getFirstBlock()
 
 pair<DataBlock *, int> Database::addRecord(Record rec)
 {
-    cout << "size of record is: " << sizeof(rec) << endl;
     if (sizeof(rec) > this->blockSize)
     {
         cout << "This record's size is larger than the block size" << endl;

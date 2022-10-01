@@ -28,4 +28,4 @@ Record::Record(string tconst, float averageRating, uint numVotes) {
 
 }
 
-int Block::MAXSIZE = 200;
+int Block::MAXSIZE = 500;
