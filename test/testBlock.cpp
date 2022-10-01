@@ -65,6 +65,10 @@ int main()
         dbptr->printBlock();
     };
 
+    cout << "Size of queue: " << sizeof(queue<int>) << endl;
+    cout << "Size of database: " << sizeof(db1) <<endl;
+    cout << "Size of recordlist: " << sizeof(dbptr->recordList) << endl; 
+
     // DataBlock* blk1 = new DataBlock(200);
     // blk1->insertRecord(*rec1);
     // blk1->insertRecord(*rec2);
