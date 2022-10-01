@@ -22,21 +22,21 @@ int DataBlock::getNumFreeRecords()
 }
 
 
-Record* DataBlock::insertRecord(Record rec) {
+int DataBlock::insertRecord(Record rec) {
 
     if (this->hasCapacity(rec)){
         if (freeRecords.size() > 0) {
             int id = freeRecords.front();
             freeRecords.pop();
             recordList[id] = rec;
-            return &recordList[id];
+            return id;
         }
         else {
             this->recordList.push_back(rec);
-            return &this->recordList.back();
+            return this->recordList.size()-1;
         }
     }
-    return NULL;
+    return -1;
 }
 
 bool DataBlock::deleteRecordByNumvotes(int numVotes)
@@ -50,6 +50,14 @@ bool DataBlock::deleteRecordByNumvotes(int numVotes)
         }
     }
     return ans;
+}
+
+bool DataBlock::deleteRecordByIndex(int index)
+{
+    if(recordList[index].isDeleted = true) return false;
+    recordList[index].isDeleted = true;
+    freeRecords.push(index);
+    return true;
 }
 
 

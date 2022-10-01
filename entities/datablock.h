@@ -12,12 +12,14 @@ private:
     // a queue to store index of deleted Records, will fill these locations with new Records
     queue<int> freeRecords;
     // a vector to store all records;
-    vector<Record> recordList;
+    
 public:
+    vector<Record> recordList;
     DataBlock(int blockSize);
     // ~ DataBlock();
-    Record* insertRecord (Record rec);
+    int insertRecord (Record rec);
     bool deleteRecordByNumvotes (int numVotes);
+    bool deleteRecordByIndex(int index);
     void printBlock();
     bool hasCapacity(Record rec);
     int getNumFreeRecords();
