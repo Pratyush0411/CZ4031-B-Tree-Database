@@ -6,8 +6,7 @@
 #include "datablock.h"
 #include "iostream"
 
-Database::Database(int capacity, int blockSize)
-{
+Database::Database(int capacity, int blockSize) {
     this->MAXSIZE = capacity;
     this->blockSize = blockSize;
 }
@@ -27,26 +26,21 @@ pair<DataBlock *, int> Database::addRecord(Record rec)
     }
 
     // insert Record into a block that has unused space (for a deleted record);
-    if (freeBlocks.size())
-    {
-        DataBlock *blk = *freeBlocks.begin();
+    if (freeBlocks.size()) {
+        DataBlock* blk = *freeBlocks.begin();
         int recIndex = blk->insertRecord(rec);
-        if (blk->getNumFreeRecords() == 0)
-        {
+        if (blk->getNumFreeRecords() == 0) {
             freeBlocks.erase(freeBlocks.begin());
         }
-        // cout << "added to " << id << " block"<<endl;
-        return {blk, recIndex};
+        //cout << "added to " << id << " block"<<endl;
+        return { blk,recIndex };
     }
 
     // add new block
-    if (this->blocksList.size() == 0 || blocksList.back().hasCapacity(rec) == false)
-    {
-        cout << "Creating new block" << endl;
-        if (this->blockSize * (blocksList.size() + 1) > this->MAXSIZE)
-        {
+    if (this->blocksList.size() == 0 || blocksList.back().hasCapacity(rec)==false) {
+        if (this->blockSize *(blocksList.size()+1) > this->MAXSIZE) {
             cout << "Disk storage is full, cannot allocate another block" << endl;
-            return {NULL, -1};
+            return{ NULL,-1 };
         }
         DataBlock blk(this->blockSize);
         blocksList.push_back(blk);
@@ -54,16 +48,13 @@ pair<DataBlock *, int> Database::addRecord(Record rec)
 
     // insert Record into the last block;
     int recIndex = blocksList.back().insertRecord(rec);
-    // cout << "added to the last block"<<endl;
-    return {&blocksList.back(), recIndex};
+    //cout << "added to the last block"<<endl;
+    return{ &blocksList.back(),recIndex };
 }
 
-void Database::deleteRecordByNumvotes(int numVotes)
-{
-    for (int i = 0; i < blocksList.size(); i++)
-    {
-        if (blocksList[i].deleteRecordByNumvotes(numVotes))
-        {
+void Database::deleteRecordByNumvotes(int numVotes){
+    for (int i = 0; i < blocksList.size(); i++) {
+        if (blocksList[i].deleteRecordByNumvotes(numVotes)) {
             freeBlocks.insert(&blocksList[i]);
         }
     }
@@ -80,12 +71,11 @@ bool Database::deleteRecordfromBtree(DataBlock *blkPointer, int recordIndex)
     return false;
 }
 
-int Database::getNumBlocks()
-{
+int Database::getNumBlocks() {
     return this->blocksList.size();
 }
 
-unsigned int Database::getSize()
-{
-    return this->blockSize * blocksList.size();
+unsigned int Database::getSize() {
+    return this->blockSize *blocksList.size();
 }
+
