@@ -1,25 +1,31 @@
 //
 // Created by praty on 17/9/2022.
 //
+#include "../entities/datablock.h"
+#include "../entities/datablock.cpp"
 #pragma once
-class DuplicateNode{
-    Block** blkPtr;
-    Record** recordPtr;
+class Duplicates : private Node
+{
+public:
+    vector<pair<DataBlock *, int>> recptrs;
+    int key;
+    Duplicates();
 };
-class Node {
+class Node
+{
     bool isLeaf;
     int size;
-    int *key; // array of keys
-    Node **ptr;// array of node pointers
+    int *key;   // array of keys
+    Node **ptr; // array of node pointers
     Node *parent;
-
+    Duplicates **dptr;
 
 public:
     static int MAXSIZE;
 
     explicit Node(bool);
 
-    void insertIntoLeafNode(int);
+    void insertIntoLeafNode(int, pair<DataBlock *, int> p1);
 
     void insertIntoInternal(int, Node *);
 
@@ -48,11 +54,14 @@ public:
     void deleteKeyPtrNode();
 
     void display();
+
+    Duplicates *Node::insertIntoDuplicates(int key, pair<DataBlock *, int> p1);
 };
 
-
-class BPTree {
+class BPTree
+{
     Node *rootNode;
+
 private:
     Node *searchLeafNode(int);
 
@@ -61,9 +70,9 @@ private:
 public:
     BPTree();
 
-    void insert(int);
+    void insert(int, pair<DataBlock *, int>);
 
-    int removeFromInternal(int, Node*, Node*);
+    int removeFromInternal(int, Node *, Node *);
 
     int remove(int);
 
