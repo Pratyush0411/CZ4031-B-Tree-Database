@@ -18,6 +18,7 @@ private:
     int MAXSIZE;
     int blockSize;
 public:
+    DataBlock* getFirstBlock();
     Database(int capacity, int blockSize);
     pair<DataBlock*,int> addRecord(Record record);
     void deleteRecordByNumvotes(int numVotes);

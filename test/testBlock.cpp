@@ -37,7 +37,7 @@ int main()
     int blockSize1 = 200;
     Database *db1 = new Database(DbSize1, blockSize1);
     ifstream file;
-    int lineNum = 10001;
+    int lineNum = 21;
     file.open("../Data/data.tsv");
     int curline = 0;
     string line;
@@ -48,16 +48,23 @@ int main()
         getline(file, line);
         if (curline == 1) // Exclude header line
         {
-            continue;
+            continue; 
         }
         vector<string> fields = split(line, '\t');
-        cout << fields[0] << " " << fields[1] << " " << fields[2] << endl;
+        //cout << fields[0] << " " << fields[1] << " " << fields[2] << endl;
         Record *trec = new Record(fields[0], stof(fields[1]), stoi(fields[2]));
         pair<DataBlock *, int> p1 = db1->addRecord(*trec);
         if (curline == lineNum)
             break;
     }
     cout << "number of blocks in db: " << db1->getNumBlocks() << endl;
+    DataBlock* dbptr = db1->getFirstBlock();
+    dbptr->printBlock();
+    if(db1->deleteRecordfromBtree(dbptr,2)){
+        cout <<"Record deleted" << endl;
+        dbptr->printBlock();
+    };
+
     // DataBlock* blk1 = new DataBlock(200);
     // blk1->insertRecord(*rec1);
     // blk1->insertRecord(*rec2);

@@ -12,6 +12,11 @@ Database::Database(int capacity, int blockSize)
     this->blockSize = blockSize;
 }
 
+DataBlock *Database::getFirstBlock()
+{
+    return &this->blocksList[0];
+}
+
 pair<DataBlock *, int> Database::addRecord(Record rec)
 {
     cout << "size of record is: " << sizeof(rec) << endl;
@@ -66,8 +71,10 @@ void Database::deleteRecordByNumvotes(int numVotes)
 
 bool Database::deleteRecordfromBtree(DataBlock *blkPointer, int recordIndex)
 {
+
     if (blkPointer->deleteRecordByIndex(recordIndex))
     {
+        cout << "Updating freeblock" << endl;
         freeBlocks.insert(blkPointer);
         return true;
     }

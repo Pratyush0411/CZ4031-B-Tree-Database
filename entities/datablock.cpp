@@ -54,7 +54,8 @@ bool DataBlock::deleteRecordByNumvotes(int numVotes)
 
 bool DataBlock::deleteRecordByIndex(int index)
 {
-    if(recordList[index].isDeleted = true) return false;
+    cout << recordList[index].isDeleted << " " << recordList[index].tconst << endl;
+    if(recordList[index].isDeleted == true) return false;
     recordList[index].isDeleted = true;
     freeRecords.push(index);
     return true;
@@ -66,6 +67,7 @@ void DataBlock::printBlock() {
         if(rec.isDeleted==false)
             cout << rec.tconst << " " <<rec.avgRating << " " <<rec.numVotes << endl;
     }
+    cout << endl;
 }
 
 
