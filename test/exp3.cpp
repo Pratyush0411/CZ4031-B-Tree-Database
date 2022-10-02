@@ -47,21 +47,21 @@ void printDatablocksDuringSearch(DuplicateNode* dp){
         }
         current = current->getNextNode();
     }
-    cout<<"Number of Datablocks accessed: "<<dataBlockSet.size()<<endl;
-    cout<<"\n";
-    int accesses = 1;
+    // cout<<"Number of Datablocks accessed: "<<dataBlockSet.size()<<endl;
+    // cout<<"\n";
+
+    int accesses = 0;
     for (DataBlock* dataBlock:dataBlockSet){
-        if (accesses <= 5){
-            cout << "Data Block Access Number "<<accesses<<":"<<endl;
+        if (dataBlock != NULL and accesses<=4){
+            // cout << "Data Block Access Number "<<++accesses<<":"<<endl;
             dataBlock->printBlock();
             cout<<"\n";
         }
-        else{
-            break;
-        }
-        accesses++;
     }
+
 }
+
+
 
 void printAverageOfAveragerating(DuplicateNode* dp){
     DuplicateNode *current;

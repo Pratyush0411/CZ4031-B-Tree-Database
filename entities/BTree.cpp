@@ -496,7 +496,7 @@ DuplicateNode *BPTree::search(int x) {
 
 }
 
-void printDatablocksDuringSearch(DuplicateNode* dp){
+void printDatablocksDuringSearch1(DuplicateNode* dp){
     unordered_set<DataBlock*> dataBlockSet;
     DuplicateNode *current = dp;
 
@@ -536,7 +536,7 @@ int BPTree::rangeSearch(Node *leaf, int x, int y){
         {
             // cout << "i is: " << i << endl;
             cout << "Key[" << i << "]: "  << leaf->getKey(i) << ", Ptr[" << i << "]: " << leaf->getDuplicateNodePtr(i) << "\n" << endl;
-            printDatablocksDuringSearch(leaf->getDuplicateNodePtr(i));
+            printDatablocksDuringSearch1(leaf->getDuplicateNodePtr(i));
             count++;
         }
 
