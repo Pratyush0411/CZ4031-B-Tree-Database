@@ -71,5 +71,4 @@ int main()
     }
     cout << "(Data loaded)" << endl;
     btree->display();
-    btree->search(6);
 }

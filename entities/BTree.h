@@ -88,7 +88,6 @@ public:
 
     Node *returnNextNode(int x);
 
-    void display();
 
     void deleteKeyPtrNode();
 };

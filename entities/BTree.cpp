@@ -2,18 +2,24 @@
 // Created by praty on 10/9/2022.
 //
 #include "vector"
-#include <queue>
 #include "../entities/storage.h"
 #include "BTree.h"
 
 using namespace std;
 
 int dupNodeCounter = 0;
+int MAXBLOCKSIZE = 200;
 int Node::MAXSIZE = 3;
 
 void Node::print() {
+    cout<<"Keys: ";
     for (int i = 0; i < this->size; i++) {
         cout << this->key[i] << " ";
+    }
+    cout << "\n";
+    cout<<"Pointers: ";
+    for (int i = 0; i < this->size+1; i++) {
+        cout << this->ptr[i] << " ";
     }
     cout << "\n";
 }
@@ -31,7 +37,7 @@ Node::Node(bool isLeaf) {
 
 
 DuplicateNode::DuplicateNode() {
-    N = determineN(200);
+    N = determineN(MAXBLOCKSIZE);
     size = 0;
     nextNode = NULL;
 
@@ -61,14 +67,9 @@ void DuplicateNode::pushRecord(pair<DataBlock*, int> metadata) {
 void DuplicateNode::print() {
     for (pair<DataBlock*, int> rec: this->recordArray) {
         dupNodeCounter++;
-        //cout<<"Record index"<<rec.second<<endl;
     }
-//    cout << "\n";
-//    cout << "N =" << this->N << endl;
 //    cout << "size =" << this->getSize() << endl;
-
     if (this->nextNode != NULL) {
-        //cout << "Going to next node" << endl;
         this->nextNode->print();
     }
 }
@@ -108,7 +109,6 @@ bool Node::hasCapacity() {
 bool Node::checkAndInsertDuplicateIntoLeaf(int x, pair<DataBlock*, int> metadata) {
     for (int i = 0; i < this->size; i++) {
         if (this->key[i] == x) {
-            //cout << "Key already exists" << endl;
             this->duplicateNodePtr[i]->pushRecord(metadata);
             return true;
             break;
@@ -120,8 +120,6 @@ bool Node::checkAndInsertDuplicateIntoLeaf(int x, pair<DataBlock*, int> metadata
 
 void Node::insertIntoLeafNode(int x, pair<DataBlock*, int> metadata) {
     if (this->size < MAXSIZE) {
-        //cout << "Inserting into the leaf node" << x<< endl;
-
         int i = 0;
         while (x > this->key[i] && i < this->size)
             i++;
@@ -142,8 +140,6 @@ void Node::insertIntoLeafNode(int x, pair<DataBlock*, int> metadata) {
 
 void Node::insertIntoInternal(int x, Node *child) {
     if (this->size < MAXSIZE) {
-        //cout << "Inserting into the internal node" << endl;
-
         int i = 0;
         while (x > this->key[i] && i < this->size)
             i++;
@@ -217,19 +213,10 @@ Node *Node::returnNextNode(int x) {
     }
 }
 
-void Node::display() {
-    for (int i = 0; i < this->getSize(); i++) {
-        cout << this->getKey(i) << " ";
-    }
-    cout << "\t";
-}
 
 BPTree::BPTree() {
     this->rootNode = NULL;
-    Node::MAXSIZE = this->determineN(500);
-    cout<<"N = "<<Node::MAXSIZE<<endl;
-    cout<<Node::MAXSIZE<<endl;
-
+    Node::MAXSIZE = this->determineN(MAXBLOCKSIZE);
 }
 
 int BPTree::determineN(int SIZE) {
@@ -381,8 +368,6 @@ int BPTree::findSmallestLB(Node *startNode) {
 
 void BPTree::changeInternalNode(int smallestLB, Node *parent, Node *newChild) {
     if (parent->hasCapacity()) {
-//        cout << "Internal Node ";
-//        parent->print();
         parent->insertIntoInternal(smallestLB, newChild);
         newChild->setParent(parent);
     } else {
@@ -446,10 +431,10 @@ void BPTree::display() {
     int level = 0;
     while (!q.empty()) {
 
-        //cout << "Level " << level << ":" << " ";
         vector<Node *> cpy;
         for (Node *node: q) {
-            nodeCounter++;
+            if (node != NULL)
+                nodeCounter++;
             cpy.push_back(node);
         }
         q.clear();
@@ -461,10 +446,14 @@ void BPTree::display() {
             }
         }
         level++;
-//        cout << "\n";
     }
-    cout<<"Number of nodes "<<nodeCounter<<endl;
-    cout<<"Number of levels "<<level<<endl;
+    cout<<"N: "<<Node::MAXSIZE<<endl;
+    cout<<"Number of nodes: "<<nodeCounter<<endl;
+    cout<<"Height of tree: "<<level<<endl;
+    cout<<"Root Node: "<<endl;
+    this->rootNode->print();
+    cout<<"First Child Node: "<<endl;
+    this->rootNode->getPtr(0)->print();
 
 }
 
