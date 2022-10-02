@@ -26,6 +26,7 @@ public:
     void printBlock();
     bool hasCapacity(Record rec);
     int getNumFreeRecords();
+    float getAverageRatingByIndex(int i);
 };
 
 #endif

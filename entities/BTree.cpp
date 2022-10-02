@@ -224,7 +224,7 @@ BPTree::BPTree() {
 
 int BPTree::determineN(int SIZE) {
     int current_size = sizeof(Node);
-    int n = (SIZE - current_size) / ((int) sizeof(int *) + (int)(sizeof(Node*)));
+    int n = (SIZE - current_size) / ((int) sizeof(int) + (int)(sizeof(Node*)));
     return n;
 }
 
@@ -867,6 +867,7 @@ int BPTree::remove(int x)
         // Non-root
     else if (cursor->getSize() >= (MAX + 1) / 2)
     {
+        cout<<"Node size > Minimum size, no further processing required."<<endl;
         // more than min. No further processing
         return counter;
     }
