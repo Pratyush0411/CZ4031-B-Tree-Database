@@ -221,7 +221,7 @@ BPTree::BPTree() {
 
 int BPTree::determineN(int SIZE) {
     int current_size = sizeof(Node);
-    int n = (SIZE - current_size) / ((int) sizeof(int *) + (int)(sizeof(Node*)));
+    int n = (SIZE - current_size) / ((int) sizeof(int) + (int)(sizeof(Node*)));
     return n;
 }
 

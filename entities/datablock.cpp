@@ -69,6 +69,9 @@ void DataBlock::printBlock() {
     cout << endl;
 }
 
+float DataBlock:: getAverageRatingByIndex(int i){
+    return this->recordList[i].avgRating;
+}
 
 DataBlock::DataBlock(int blockSize) {
     this->MAXSIZE = blockSize;
