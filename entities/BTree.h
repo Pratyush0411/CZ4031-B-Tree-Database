@@ -110,8 +110,11 @@ public:
 
     void insert(int,pair<DataBlock*, int>);
     DuplicateNode* search(int);
+    DuplicateNode* searchLowerBound(int, int);
 
     void display();
+
+    int rangeSearch(Node *leaf, int, int);
 
     void changeInternalNode(int smallestLB, Node *parent, Node *newLeaf);
 

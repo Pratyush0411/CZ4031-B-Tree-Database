@@ -22,8 +22,11 @@ void Node::print() {
         cout << this->ptr[i] << " ";
     }
     cout << "\n";
+
 }
 
+
+   
 
 // use this for B+ tree implementation
 Node::Node(bool isLeaf) {
@@ -460,37 +463,104 @@ void BPTree::display() {
 Node *BPTree::getRootNode() const {
     return rootNode;
 }
-Node *BPTree::searchWithPrintStatements(int x) {
-    Node *cursor = this->rootNode;
-    int accesses = 0;
-    while (!cursor->isLeaf1()) {
-        if (cursor != NULL){
-            cout << "Index Node Access Number "<<++accesses<<":"<<endl;
-            cursor->print();
-            cout<<"\n";
-        }
-        cursor = cursor->returnNextNode(x);
-    }
-    if (cursor != NULL){
-        cout << "Index Node Access Number "<<++accesses<<":"<<endl;
-        cursor->print();
-        cout<<"\n";
-    }
-    return cursor;
-}
 
 DuplicateNode *BPTree::search(int x) {
-    Node* leaf = this->searchWithPrintStatements(x);
-
+    Node* leaf = this->searchLeafNode(x);
     for (int i = 0; i < leaf->getSize(); i++) {
+        // cout << leaf->getKey(i) << endl;
         if (leaf->getKey(i) == x) {
+            cout << "Key exists" << endl;
             dupNodeCounter = 0;
             leaf->getDuplicateNodePtr(i)->print();
+            cout<< "Count of key: "<<dupNodeCounter<<endl;
             return leaf->getDuplicateNodePtr(i);
         }
     }
 
 }
+
+void printDatablocksDuringSearch(DuplicateNode* dp){
+    unordered_set<DataBlock*> dataBlockSet;
+    DuplicateNode *current = dp;
+
+    while(current != NULL){
+
+        for (pair<DataBlock*, int> rec: current->recordArray) {
+            if(!dataBlockSet.count(rec.first)){
+                dataBlockSet.insert(rec.first);
+            }
+        }
+        current = current->getNextNode();
+    }
+    // cout<<"Number of Datablocks accessed: "<<dataBlockSet.size()<<endl;
+    // cout<<"\n";
+
+    int accesses = 0;
+    for (DataBlock* dataBlock:dataBlockSet){
+        if (dataBlock != NULL and accesses<=4){
+            // cout << "Data Block Access Number "<<++accesses<<":"<<endl;
+            dataBlock->printBlock();
+            cout<<"\n";
+        }
+    }
+
+}
+
+int BPTree::rangeSearch(Node *leaf, int x, int y){
+    cout << "Printing out the first 5 index nodes..." << endl;
+    int count = 0;
+    int numberOfRecords;
+    for (int i = 0; i < leaf->getSize(); i++) {
+        // if (leaf->getKey(i) >= x) {
+        
+        // cout << "Key: " << leaf->getKey(i) << endl;
+        
+        if (leaf->getKey(i) >= x and count < 5)
+        {
+            // cout << "i is: " << i << endl;
+            cout << "Key[" << i << "]: "  << leaf->getKey(i) << ", Ptr[" << i << "]: " << leaf->getDuplicateNodePtr(i) << "\n" << endl;
+            printDatablocksDuringSearch(leaf->getDuplicateNodePtr(i));
+            count++;
+        }
+
+        if (leaf->getKey(i) >= x)
+        {numberOfRecords++;}
+
+        if (leaf->getKey(i) >= y){
+            break;
+        } 
+        if (i == leaf->getSize()-1){
+            // cout << "finalVal updated to: " << leaf->getKey(i) << endl;
+            cout << "Address of this leaf node: " << leaf << endl;
+            cout << "Address of next leaf node: " << leaf->getPtr(leaf->getSize()) << endl;
+            cout << "123:" << numberOfRecords << endl;
+
+            return leaf->getKey(i);
+        }  
+    }
+
+}
+
+DuplicateNode *BPTree::searchLowerBound(int x, int y) {
+
+    Node* leaf = this->searchLeafNode(x);
+
+    int finalVal;
+
+    // cout << leaf<< endl;
+    int accesses = 0;
+    while (finalVal < y){
+        cout << "Node Access " << accesses << endl;
+        finalVal = this -> rangeSearch(leaf,x,y);
+        accesses ++;
+        // cout << "Double check finalVal: " << finalVal << endl;
+        leaf = leaf-> getPtr(leaf->getSize());
+    }
+    
+
+}
+
+
 
 void Node::deleteKeyPtrNode()
 {
