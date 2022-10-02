@@ -125,4 +125,6 @@ public:
     int removeFromInternal(int x, Node *parent, Node *child);
 
     int remove(int x);
+
+    Node *searchWithPrintStatements(int x);
 };
