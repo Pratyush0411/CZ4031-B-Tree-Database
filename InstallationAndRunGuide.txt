@@ -1,0 +1,13 @@
+Installation and run guide:
+1) Download and extract zip file to intended location
+
+2) Use command prompt, and set your directory to that folder using "cd"
+
+3) Each experiment is in a separate cpp file. To compile, run the following code:
+-Experiment 1: "g++ -o test exp1.cpp"
+-Experiment 2: "g++ -o test exp2.cpp"
+-Experiment 3: "g++ -o test exp3.cpp"
+-Experiment 4: "g++ -o test exp4.cpp"
+-Experiment 5: "g++ -o test exp5.cpp"
+
+4) For each of the experiments, after compiling, run "test" in the code to run the compiled file.
