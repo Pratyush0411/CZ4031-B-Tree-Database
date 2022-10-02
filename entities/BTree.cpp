@@ -797,6 +797,7 @@ int BPTree::remove(int x)
         // Non-root
     else if (cursor->getSize() >= (MAX + 1) / 2)
     {
+        cout<<"Node size > Minimum size, no further processing required."<<endl;
         // more than min. No further processing
         return counter;
     }
