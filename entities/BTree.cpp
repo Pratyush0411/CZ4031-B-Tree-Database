@@ -464,15 +464,32 @@ Node *BPTree::getRootNode() const {
     return rootNode;
 }
 
+Node *BPTree::searchWithPrintStatements(int x) {
+    Node *cursor = this->rootNode;
+    int accesses = 0;
+    while (!cursor->isLeaf1()) {
+        if (cursor != NULL){
+            cout << "Index Node Access Number "<<++accesses<<":"<<endl;
+            cursor->print();
+            cout<<"\n";
+        }
+        cursor = cursor->returnNextNode(x);
+    }
+    if (cursor != NULL){
+        cout << "Index Node Access Number "<<++accesses<<":"<<endl;
+        cursor->print();
+        cout<<"\n";
+    }
+    return cursor;
+}
+
 DuplicateNode *BPTree::search(int x) {
-    Node* leaf = this->searchLeafNode(x);
+     Node* leaf = this->searchWithPrintStatements(x);
+
     for (int i = 0; i < leaf->getSize(); i++) {
-        // cout << leaf->getKey(i) << endl;
         if (leaf->getKey(i) == x) {
-            cout << "Key exists" << endl;
             dupNodeCounter = 0;
             leaf->getDuplicateNodePtr(i)->print();
-            cout<< "Count of key: "<<dupNodeCounter<<endl;
             return leaf->getDuplicateNodePtr(i);
         }
     }
