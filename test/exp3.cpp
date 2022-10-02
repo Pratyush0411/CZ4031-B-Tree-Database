@@ -49,29 +49,40 @@ void printDatablocksDuringSearch(DuplicateNode* dp){
     }
     cout<<"Number of Datablocks accessed: "<<dataBlockSet.size()<<endl;
     cout<<"\n";
-    int accesses = 0;
+    int accesses = 1;
     for (DataBlock* dataBlock:dataBlockSet){
-        if (dataBlock != NULL and accesses<=4){
-            cout << "Data Block Access Number "<<++accesses<<":"<<endl;
+        if (accesses <= 5){
+            cout << "Data Block Access Number "<<accesses<<":"<<endl;
             dataBlock->printBlock();
             cout<<"\n";
         }
+        else{
+            break;
+        }
+        accesses++;
     }
 
 }
 
 void printAverageOfAveragerating(DuplicateNode* dp){
-    DuplicateNode *current = dp;
-    int sum = 0;
-    int cnt = 0;
+    DuplicateNode *current;
+    current = dp;
+    float sum = 0.0f;
+    float cnt = 0.0f;
     while(current != NULL){
 
         for (pair<DataBlock*, int> rec: current->recordArray) {
-            rec.first.get
-            cnt++;
+            cout<< rec.second<<endl;
+            sum = sum + (rec.first->recordList.at(rec.second).avgRating);
+            cnt= cnt +1.0f;
         }
         current = current->getNextNode();
     }
+    float avg = sum/cnt;
+    cout<<cnt<<endl;
+    cout<< "Average of Average Rating of records: "<<avg<<endl;
+
+
 }
 
 int main() {
@@ -110,6 +121,7 @@ int main() {
 
     DuplicateNode *dp = btree->search(500);
     printDatablocksDuringSearch(dp);
+    //printAverageOfAveragerating(dp);
 
 
 }
