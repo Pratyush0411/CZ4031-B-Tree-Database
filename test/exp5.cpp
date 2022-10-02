@@ -38,7 +38,7 @@ int main()
 {
     cout << "Experiment 5: delete those movies with the attribute numVotes equal to 1,000" << endl;
     int DbSize1 = 500000000;
-    int blockSize1 = 200;
+    int blockSize1 = 500;
     cout << "Allocated database size: " << DbSize1 / 1000000 << "MB" << endl;
     cout << "Block size: " << blockSize1 << endl;
     Database *db1 = new Database(DbSize1, blockSize1);
@@ -72,6 +72,8 @@ int main()
     cout << "(Data loaded)" << endl;
     btree->display();
     cout<< "\n\nRemoving key 1000"<<endl;
-    btree->remove(1000);
+    int foo = btree->remove(1000);
     btree->display();
+    cout<< "Nodes deleted: "<<foo<<endl;
+
 }
