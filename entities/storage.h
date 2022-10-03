@@ -20,6 +20,7 @@ class Record{
     bool operator == (Record rhs);
 
     Record(string tconst, float averageRating, uint numVotes);
+    void print();
 
 };
 

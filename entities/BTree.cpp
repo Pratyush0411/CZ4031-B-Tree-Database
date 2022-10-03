@@ -2,94 +2,155 @@
 // Created by praty on 10/9/2022.
 //
 #include "vector"
-#include <queue>
-#include "storage.h"
+#include "../entities/storage.h"
 #include "BTree.h"
 
 using namespace std;
 
-int Node::MAXNODESIZE = 3;
+int dupNodeCounter = 0;
+int MAXBLOCKSIZE = 200;
+int Node::MAXSIZE = 3;
 
-Node::Node(bool isLeaf)
-{
+void Node::print() {
+    cout<<"Keys: ";
+    for (int i = 0; i < this->size; i++) {
+        cout << this->key[i] << " ";
+    }
+    cout << "\n";
+    cout<<"Pointers: ";
+    for (int i = 0; i < this->size+1; i++) {
+        cout << this->ptr[i] << " ";
+    }
+    cout << "\n";
+
+}
+
+
+   
+
+// use this for B+ tree implementation
+Node::Node(bool isLeaf) {
     this->isLeaf = isLeaf;
-    key = new int[MAXNODESIZE];
-    ptr = new Node *[MAXNODESIZE + 1];
-    dptr = new Duplicates *[MAXNODESIZE + 1];
+    key = new int[MAXSIZE];
+    ptr = new Node *[MAXSIZE + 1];
+    duplicateNodePtr = new DuplicateNode *[MAXSIZE];
     parent = NULL;
     size = 0;
-    this->MAXNODESIZE = 3;
 }
 
-BPTree::BPTree()
-{
-    this->rootNode = NULL;
+
+DuplicateNode::DuplicateNode() {
+    N = determineN(MAXBLOCKSIZE);
+    size = 0;
+    nextNode = NULL;
+
 }
 
-Duplicates::Duplicates()
-{
+int DuplicateNode::determineN(int SIZE) {
+
+    int current_size = sizeof(*this) - sizeof(this->recordArray);
+    int n = (SIZE - current_size) / ((int) sizeof(Record *));
+
+    return n;
+
 }
 
-bool Node::hasCapacity()
-{
-    if (this->size < MAXNODESIZE)
-    {
-        return true;
+void DuplicateNode::pushRecord(pair<DataBlock*, int> metadata) {
+    int currentSize = this->getSize();
+    if (currentSize < this->N) {
+        this->recordArray.push_back(metadata);
+        this->setSize(++currentSize);
+    } else {
+        if (this->nextNode == NULL) {
+            this->nextNode = new DuplicateNode();
+        }
+        this->nextNode->pushRecord(metadata);
     }
-    else
+}
+
+void DuplicateNode::print() {
+    for (pair<DataBlock*, int> rec: this->recordArray) {
+        dupNodeCounter++;
+    }
+//    cout << "size =" << this->getSize() << endl;
+    if (this->nextNode != NULL) {
+        this->nextNode->print();
+    }
+}
+
+int DuplicateNode::getN() const {
+    return N;
+}
+
+void DuplicateNode::setN(int n) {
+    N = n;
+}
+
+DuplicateNode *DuplicateNode::getNextNode() const {
+    return nextNode;
+}
+
+void DuplicateNode::setNextNode(DuplicateNode *nextNode) {
+    DuplicateNode::nextNode = nextNode;
+}
+
+int DuplicateNode::getSize() const {
+    return size;
+}
+
+void DuplicateNode::setSize(int size) {
+    DuplicateNode::size = size;
+}
+
+
+bool Node::hasCapacity() {
+    if (this->size < MAXSIZE) {
+        return true;
+    } else
         return false;
 }
 
-void Node::insertIntoLeafNode(int x, pair<DataBlock *, int> p1)
-{
-    if (this->size < MAXNODESIZE)
-    {
-        cout << "Inserting " << x << " into the leaf node" << endl;
-        int i = 0;
-        while (x > this->key[i] && i < this->size) // Find which index to insert
-            i++;
-        for (int j = this->size; j > i; j--) // shift the rest of the keys to the right
-        {
-            this->key[j] = this->key[j - 1];
+bool Node::checkAndInsertDuplicateIntoLeaf(int x, pair<DataBlock*, int> metadata) {
+    for (int i = 0; i < this->size; i++) {
+        if (this->key[i] == x) {
+            this->duplicateNodePtr[i]->pushRecord(metadata);
+            return true;
+            break;
         }
-        cout << "Found and shifted other indexes" << endl;
-        this->key[i] = x;
-        this->size++;
-        this->ptr[this->size] = this->ptr[this->size - 1]; // shifting pointers to make space
-        cout << this->getPtr(i) << endl;
-        if (this->getSize() == 0)
-        { // If duplicates object does not exist
-            cout << "Duplicate object does not exist, creating" << endl;
-            Duplicates *temp = new Duplicates();
-            (temp->recptrs).insert(temp->recptrs.end(), p1);
-            cout << "Record pointer inserted" << endl;
-            this->setDupPtr(i, temp);
-        }
-        else
-        { // Duplicates object already exists
-            cout << "Duplicate object already exists, inserting" << endl;
-            Duplicates *tp = this->getDPtr(i);
-            (tp->recptrs).insert(tp->recptrs.end(), p1);
-        }
-        this->ptr[this->size - 1] = NULL; // Should be getNextNode to point to next leaf node
     }
+    return false;
 }
 
-void Node::insertIntoInternal(int x, Node *child)
-{
-    if (this->size < MAXNODESIZE)
-    {
-        cout << "Inserting into the internal node" << endl;
 
+void Node::insertIntoLeafNode(int x, pair<DataBlock*, int> metadata) {
+    if (this->size < MAXSIZE) {
         int i = 0;
         while (x > this->key[i] && i < this->size)
             i++;
-        for (int j = this->size; j > i; j--)
-        {
+        for (int j = this->size; j > i; j--) {
+            this->key[j] = this->key[j - 1];
+            this->duplicateNodePtr[j] = this->duplicateNodePtr[j - 1];
+        }
+
+        this->key[i] = x;
+        this->duplicateNodePtr[i] = new DuplicateNode();
+        this->duplicateNodePtr[i]->pushRecord(metadata);
+        this->size++;
+        this->ptr[this->size] = this->ptr[this->size - 1];
+        this->ptr[this->size - 1] = NULL;
+
+    }
+}
+
+void Node::insertIntoInternal(int x, Node *child) {
+    if (this->size < MAXSIZE) {
+        int i = 0;
+        while (x > this->key[i] && i < this->size)
+            i++;
+        for (int j = this->size; j > i; j--) {
             this->key[j] = this->key[j - 1];
         }
-        for (int j = this->size + 1; j > i + 1; j--)
-        {
+        for (int j = this->size + 1; j > i + 1; j--) {
             this->ptr[j] = this->ptr[j - 1];
         }
         this->key[i] = x;
@@ -98,223 +159,197 @@ void Node::insertIntoInternal(int x, Node *child)
     }
 }
 
-bool Node::isLeaf1() const
-{
+bool Node::isLeaf1() const {
     return isLeaf;
 }
 
-void Node::setSize(int size)
-{
+void Node::setSize(int size) {
     this->size = size;
 }
 
-void Node::deleteKeyPtrNode()
-{
-    delete[] this->key;
-    delete[] this->ptr;
-    delete this;
-}
 
-int Node::getKey(int i) const
-{
+int Node::getKey(int i) const {
     return this->key[i];
 }
 
-void Node::setKey(int i, int x)
-{
+void Node::setKey(int i, int x) {
     this->key[i] = x;
 }
 
-Node *Node::getPtr(int i) const
-{
-    if (this->getSize() < i)
-    {
-        return NULL;
-    }
+Node *Node::getPtr(int i) const {
     return this->ptr[i];
 }
 
-Duplicates *Node::getDPtr(int i) const
-{
-    if (this->getSize() < i)
-    {
-        return NULL;
-    }
-    return this->dptr[i];
-}
-
-void Node::setPtr(int i, Node *ptr)
-{
+void Node::setPtr(int i, Node *ptr) {
     this->ptr[i] = ptr;
 }
 
-void Node::setDupPtr(int i, Duplicates *dp1)
-{
-    this->dptr[i] = dp1;
+DuplicateNode *Node::getDuplicateNodePtr(int i) const {
+    return this->duplicateNodePtr[i];
 }
 
-Node *Node::getParent() const
-{
+void Node::setDuplicateNodePtr(int i, DuplicateNode *dp) {
+    this->duplicateNodePtr[i] = dp;
+}
+
+Node *Node::getParent() const {
     return parent;
 }
 
-void Node::setParent(Node *parent)
-{
+void Node::setParent(Node *parent) {
     this->parent = parent;
 }
 
-int Node::getSize() const
-{
+int Node::getSize() const {
     return this->size;
 }
 
-Node *Node::returnNextNode(int x)
-{
-    if (!this->isLeaf)
-    {
-        for (int i = 0; i < this->size; i++)
-        {
-            if (x < this->key[i])
-            {
+Node *Node::returnNextNode(int x) {
+    if (!this->isLeaf) {
+        for (int i = 0; i < this->size; i++) {
+            if (x < this->key[i]) {
                 return this->ptr[i];
             }
-            if (i == this->size - 1)
-            {
+            if (i == this->size - 1) {
                 return this->ptr[i + 1];
             }
         }
     }
-    return NULL;
 }
 
-void Node::display()
-{
-    for (int i = 0; i < this->getSize(); i++)
-    {
-        cout << this->getKey(i) << " ";
-    }
-    cout << "\t";
+
+BPTree::BPTree() {
+    this->rootNode = NULL;
+    Node::MAXSIZE = this->determineN(MAXBLOCKSIZE);
 }
 
-Node *BPTree::searchLeafNode(int x)
-{
+int BPTree::determineN(int SIZE) {
+//    int current_size = sizeof(Node);
+//    int n = (SIZE - current_size) / ((int) sizeof(int) + (int)(sizeof(Node*)));
+    int current_size = 21;
+    int n = (SIZE - current_size) / (4 + 8);
+    return n;
+}
+
+Node *BPTree::searchLeafNode(int x) {
     Node *cursor = this->rootNode;
-    while (!cursor->isLeaf1())
-    {
+    while (!cursor->isLeaf1()) {
         cursor = cursor->returnNextNode(x);
     }
     return cursor;
 }
 
-Node *BPTree::splitAndReturnNewLeaf(Node *orgNode, int x)
-{
+Node *BPTree::splitAndReturnNewLeaf(Node *orgNode, int x, pair<DataBlock*, int> metadata) {
     Node *newNode = new Node(true);
-    int virtualNode[3 + 1]; // HARDCODED
+    int virtualNode[Node::MAXSIZE + 1];
+    DuplicateNode *virtualPointer[Node::MAXSIZE + 1];
 
-    for (int i = 0; i < Node::MAXNODESIZE; i++)
-    {
+
+    for (int i = 0; i < Node::MAXSIZE; i++) {
         virtualNode[i] = orgNode->getKey(i);
+        virtualPointer[i] = orgNode->getDuplicateNodePtr(i);
     }
+
+
     int i = 0;
-    while (x > virtualNode[i] && i < Node::MAXNODESIZE)
+    while (x > virtualNode[i] && i < Node::MAXSIZE)
         i++;
-    for (int j = Node::MAXNODESIZE + 1; j > i; j--)
-    {
+
+
+    for (int j = Node::MAXSIZE + 1; j > i; j--) {
         virtualNode[j] = virtualNode[j - 1];
+        virtualPointer[j] = virtualPointer[j - 1];
     }
+
     // inserting x if Node was of size MAX+1
     virtualNode[i] = x;
-    //    for (int j =0; j <= Node::MAXSIZE; j++)
-    //        cout << virtualNode[j]<<"\t";
-    //    cout<<"\n";
-    orgNode->setSize((Node::MAXNODESIZE + 1) / 2);
-    newNode->setSize((Node::MAXNODESIZE + 1) - orgNode->getSize());
+
+    // creating new duplicate node
+    virtualPointer[i] = new DuplicateNode();
+    virtualPointer[i]->pushRecord(metadata);
+
+    // set MAXSIZE
+    orgNode->setSize((Node::MAXSIZE + 1) / 2);
+    newNode->setSize((Node::MAXSIZE + 1) - orgNode->getSize());
 
     // resetting pointers
     orgNode->setPtr(orgNode->getSize(), newNode);
-    newNode->setPtr(newNode->getSize(), orgNode->getPtr(Node::MAXNODESIZE));
-    orgNode->setPtr(Node::MAXNODESIZE, NULL);
+    newNode->setPtr(newNode->getSize(), orgNode->getPtr(Node::MAXSIZE));
+    orgNode->setPtr(Node::MAXSIZE, NULL);
 
-    // changing original leaf keys
-    for (i = 0; i < orgNode->getSize(); i++)
-    {
+    // changing original leaf keys and duplicateNodes
+    for (i = 0; i < orgNode->getSize(); i++) {
         orgNode->setKey(i, virtualNode[i]);
+        orgNode->setDuplicateNodePtr(i, virtualPointer[i]);
     }
 
     int j;
-    // changing keys in the new leaf
-    for (i = 0, j = orgNode->getSize(); i < newNode->getSize(); i++, j++)
-    {
+    // changing keys and duplicateNodes in the new leaf
+    for (i = 0, j = orgNode->getSize(); i < newNode->getSize(); i++, j++) {
         newNode->setKey(i, virtualNode[j]);
+        newNode->setDuplicateNodePtr(i, virtualPointer[j]);
     }
 
     return newNode;
 }
 
-Node *BPTree::splitAndReturnNewInternal(Node *orgInternal, int x, Node *newChild)
-{
+Node *BPTree::splitAndReturnNewInternal(Node *orgInternal, int x, Node *newChild) {
     Node *newInternal = new Node(false);
-    int MAX = Node::MAXNODESIZE;
-    int virtualKey[3 + 1];       // HARDCODED
-    Node *virtualPointer[3 + 2]; // HARDCODED
-    for (int i = 0; i < MAX; i++)
-    {
+    int MAX = Node::MAXSIZE;
+    int virtualKey[MAX + 1];
+    Node *virtualPointer[MAX + 2];
+    for (int i = 0; i < MAX; i++) {
         virtualKey[i] = orgInternal->getKey(i);
     }
-    for (int i = 0; i < MAX + 1; i++)
-    {
+    for (int i = 0; i < MAX + 1; i++) {
         virtualPointer[i] = orgInternal->getPtr(i);
     }
     int i, j;
-    for (i = 0; i < MAX; i++)
-    {
+    for (i = 0; i < MAX; i++) {
         if (x < virtualKey[i])
             break;
     }
-    for (int j = MAX + 1; j > i; j--)
-    {
+    for (int j = MAX + 1; j > i; j--) {
         virtualKey[j] = virtualKey[j - 1];
     }
     virtualKey[i] = x;
-    for (int j = MAX + 2; j > i + 1; j--)
-    {
+    for (int j = MAX + 2; j > i + 1; j--) {
         virtualPointer[j] = virtualPointer[j - 1];
     }
     virtualPointer[i + 1] = newChild;
-    orgInternal->setSize((MAX / 2));
-    newInternal->setSize((MAX)-orgInternal->getSize());
+    orgInternal->setSize((MAX/2));
+    newInternal->setSize((MAX) - orgInternal->getSize());
 
     // orgInternal
-    for (i = 0; i < orgInternal->getSize() + 1; i++)
-    {
+    for (i = 0; i < orgInternal->getSize() + 1; i++) {
         orgInternal->setKey(i, virtualKey[i]);
     }
 
-    for (i = 0; i < orgInternal->getSize() + 1; i++)
-    {
+    for (i = 0; i < orgInternal->getSize() + 1; i++) {
         orgInternal->setPtr(i, virtualPointer[i]);
+        virtualPointer[i]->setParent(orgInternal);
     }
 
     // skipping one key
     j = orgInternal->getSize() + 1;
-    for (i = 0; i < newInternal->getSize(); i++)
-    {
+    for (i = 0; i < newInternal->getSize(); i++) {
         newInternal->setKey(i, virtualKey[j]);
         j++;
     }
 
     j = orgInternal->getSize() + 1;
-    for (i = 0; i < newInternal->getSize() + 1; i++)
-    {
+    for (i = 0; i < newInternal->getSize() + 1; i++) {
         newInternal->setPtr(i, virtualPointer[j]);
+        virtualPointer[j]->setParent(newInternal);
         j++;
     }
 
     return newInternal;
+
+
 }
 
-void BPTree::createRootNode(Node *orgNode, Node *newNode, int smallestLB)
-{
+void BPTree::createRootNode(Node *orgNode, Node *newNode, int smallestLB) {
 
     Node *newRoot = new Node(false);
 
@@ -325,107 +360,239 @@ void BPTree::createRootNode(Node *orgNode, Node *newNode, int smallestLB)
     orgNode->setParent(newRoot);
     newNode->setParent(newRoot);
     this->rootNode = newRoot;
+
 }
 
-int BPTree::findSmallestLB(Node *startNode)
-{
+int BPTree::findSmallestLB(Node *startNode) {
     Node *cursor = startNode;
-    while (!cursor->isLeaf1())
-    {
+    while (!cursor->isLeaf1()) {
         cursor = cursor->getPtr(0);
     }
     return cursor->getKey(0);
+
 }
-void BPTree::changeInternalNode(int smallestLB, Node *parent, Node *newChild)
-{
-    if (parent->hasCapacity())
-    {
+
+void BPTree::changeInternalNode(int smallestLB, Node *parent, Node *newChild) {
+    if (parent->hasCapacity()) {
         parent->insertIntoInternal(smallestLB, newChild);
         newChild->setParent(parent);
-    }
-    else
-    {
+    } else {
         Node *newInternal = this->splitAndReturnNewInternal(parent, smallestLB, newChild);
-        newChild->setParent(parent);
-        for (int i = 0; i < newInternal->getSize() + 1; i++)
-        {
-            Node *child = newInternal->getPtr(i);
-            if (child == newChild)
-            {
-                newChild->setParent(newInternal);
-                break;
-            }
-        }
-        // int smallestLB = parent->getKey(parent->getSize());
+//        newChild->setParent(parent);
+//        for (int i = 0; i < newInternal->getSize() + 1; i++) {
+//            Node *child = newInternal->getPtr(i);
+//            if (child == newChild) {
+//                newChild->setParent(newInternal);
+//                break;
+//            }
+//        }
+        //int smallestLB = parent->getKey(parent->getSize());
         int smallestLB = this->findSmallestLB(newInternal);
-        if (this->rootNode == parent)
-        {
+        if (this->rootNode == parent) {
             // smallestLb here is a big brain strat to remember
             // we retrieve the node which was skipped while splitting internal nodes
             this->createRootNode(parent, newInternal, smallestLB);
-        }
-        else
-        {
+
+        } else {
             this->changeInternalNode(smallestLB, parent->getParent(), newInternal);
         }
+
     }
 }
 
-void BPTree::insert(int x, pair<DataBlock *, int> p1)
-{
+void BPTree::insert(int x, pair<DataBlock*, int> rec) {
 
-    if (this->rootNode == NULL)
-    {
+    if (this->rootNode == NULL) {
         this->rootNode = new Node(true);
-        this->rootNode->insertIntoLeafNode(x, p1);
-    }
-    else
-    {
+        this->rootNode->insertIntoLeafNode(x, rec);
+    } else {
         // searching for leaf
         Node *leafNode = this->searchLeafNode(x);
 
         // if leaf has capacity then add to leaf
-        if (leafNode->hasCapacity())
-            leafNode->insertIntoLeafNode(x, p1);
-        else
-        {
-            cout << "Splitting leaf node for " << x << endl;
-            Node *newLeaf = this->splitAndReturnNewLeaf(leafNode, x);
-            if (leafNode->getParent() == NULL)
-            {
-                // create new root
-                this->createRootNode(leafNode, newLeaf, newLeaf->getKey(0));
-            }
-            else
-            {
-                this->changeInternalNode(newLeaf->getKey(0), leafNode->getParent(), newLeaf);
+        if (!leafNode->checkAndInsertDuplicateIntoLeaf(x, rec)) {
+            if (leafNode->hasCapacity())
+                leafNode->insertIntoLeafNode(x, rec);
+            else {
+                //cout << "Splitting leaf node for " << x << endl;
+                Node *newLeaf = this->splitAndReturnNewLeaf(leafNode, x, rec);
+                if (leafNode->getParent() == NULL) {
+                    // create new root
+                    this->createRootNode(leafNode, newLeaf, newLeaf->getKey(0));
+                } else {
+                    this->changeInternalNode(newLeaf->getKey(0), leafNode->getParent(), newLeaf);
+                }
             }
         }
+
     }
+
 }
 
-/*
-void BPTree::removeIntNode(Node* cursor){
-    int MAX = Node::MAXSIZE;
-    Node *parent = cursor->getParent();
-    int keyToDel = this->findSmallestLB(cursor);
-    int foo=0;
-    for(foo=0;foo<=parent->getSize();foo++){
-        if(parent->getKey(foo) == keyToDel){
-            for(int bar=foo;bar<=parent->getSize();bar++){
-                //shift keys
-                //parent->setKey(bar)
+void BPTree::display() {
+// BFS printing the tree
+    int nodeCounter = 0;
+    vector<Node *> q;
+    q.push_back(rootNode);
+    int level = 0;
+    while (!q.empty()) {
+
+        vector<Node *> cpy;
+        for (Node *node: q) {
+            if (node != NULL)
+                nodeCounter++;
+            cpy.push_back(node);
+        }
+        q.clear();
+        for (Node *node: cpy) {
+            if (!node->isLeaf1()) {
+                for (int i = 0; i < node->getSize() + 1; i++) {
+                    q.push_back(node->getPtr(i));
+                }
             }
-            return;
+        }
+        level++;
+    }
+    cout<<"N: "<<Node::MAXSIZE<<endl;
+    cout<<"Number of nodes: "<<nodeCounter<<endl;
+    cout<<"Height of tree: "<<level<<endl;
+    cout<<"Root Node: "<<endl;
+    this->rootNode->print();
+    cout<<"First Child Node: "<<endl;
+    this->rootNode->getPtr(0)->print();
+
+}
+
+Node *BPTree::getRootNode() const {
+    return rootNode;
+}
+
+Node *BPTree::searchWithPrintStatements(int x) {
+    Node *cursor = this->rootNode;
+    int accesses = 0;
+    while (!cursor->isLeaf1()) {
+        if (cursor != NULL){
+            cout << "Index Node Access Number "<<++accesses<<":"<<endl;
+            cursor->print();
+            cout<<"\n";
+        }
+        cursor = cursor->returnNextNode(x);
+    }
+    if (cursor != NULL){
+        cout << "Index Node Access Number "<<++accesses<<":"<<endl;
+        cursor->print();
+        cout<<"\n";
+    }
+    return cursor;
+}
+
+DuplicateNode *BPTree::search(int x) {
+     Node* leaf = this->searchWithPrintStatements(x);
+
+    for (int i = 0; i < leaf->getSize(); i++) {
+        if (leaf->getKey(i) == x) {
+            dupNodeCounter = 0;
+            leaf->getDuplicateNodePtr(i)->print();
+            return leaf->getDuplicateNodePtr(i);
         }
     }
+
 }
-*/
+
+void printDatablocksDuringSearch1(DuplicateNode* dp){
+    unordered_set<DataBlock*> dataBlockSet;
+    DuplicateNode *current = dp;
+
+    while(current != NULL){
+
+        for (pair<DataBlock*, int> rec: current->recordArray) {
+            if(!dataBlockSet.count(rec.first)){
+                dataBlockSet.insert(rec.first);
+            }
+        }
+        current = current->getNextNode();
+    }
+    // cout<<"Number of Datablocks accessed: "<<dataBlockSet.size()<<endl;
+    // cout<<"\n";
+
+    int accesses = 0;
+    for (DataBlock* dataBlock:dataBlockSet){
+        if (dataBlock != NULL and accesses<=4){
+            // cout << "Data Block Access Number "<<++accesses<<":"<<endl;
+            dataBlock->printBlock();
+            cout<<"\n";
+        }
+    }
+
+}
+
+int BPTree::rangeSearch(Node *leaf, int x, int y){
+    cout << "Printing out the first 5 index nodes..." << endl;
+    int count = 0;
+    int numberOfRecords;
+    for (int i = 0; i < leaf->getSize(); i++) {
+        // if (leaf->getKey(i) >= x) {
+        
+        // cout << "Key: " << leaf->getKey(i) << endl;
+        
+        if (leaf->getKey(i) >= x and count < 5)
+        {
+            // cout << "i is: " << i << endl;
+            cout << "Key[" << i << "]: "  << leaf->getKey(i) << ", Ptr[" << i << "]: " << leaf->getDuplicateNodePtr(i) << "\n" << endl;
+            printDatablocksDuringSearch1(leaf->getDuplicateNodePtr(i));
+            count++;
+        }
+
+        if (leaf->getKey(i) >= x)
+        {numberOfRecords++;}
+
+        if (leaf->getKey(i) >= y){
+            break;
+        } 
+        if (i == leaf->getSize()-1){
+            // cout << "finalVal updated to: " << leaf->getKey(i) << endl;
+            cout << "Address of this leaf node: " << leaf << endl;
+            cout << "Address of next leaf node: " << leaf->getPtr(leaf->getSize()) << endl;
+            cout << "123:" << numberOfRecords << endl;
+
+            return leaf->getKey(i);
+        }  
+    }
+
+}
+
+DuplicateNode *BPTree::searchLowerBound(int x, int y) {
+
+    Node* leaf = this->searchLeafNode(x);
+
+    int finalVal;
+
+    // cout << leaf<< endl;
+    int accesses = 0;
+    while (finalVal < y){
+        cout << "Node Access " << accesses << endl;
+        finalVal = this -> rangeSearch(leaf,x,y);
+        accesses ++;
+        // cout << "Double check finalVal: " << finalVal << endl;
+        leaf = leaf-> getPtr(leaf->getSize());
+    }
+    
+
+}
+
+
+
+void Node::deleteKeyPtrNode()
+{
+    delete[] this->key;
+    delete[] this->ptr;
+    delete this;
+}
 
 int BPTree::removeFromInternal(int x, Node *parent, Node *child)
 {
     // if node is root
-    int MAX = Node::MAXNODESIZE;
+    int MAX = Node::MAXSIZE;
     // cout<<"x is "<<x<<endl;
     int counter = 0;
 
@@ -632,7 +799,7 @@ int BPTree::removeFromInternal(int x, Node *parent, Node *child)
 
 int BPTree::remove(int x)
 {
-    int MAX = Node::MAXNODESIZE;
+    int MAX = Node::MAXSIZE;
     int counter = 0;
     cout << "\nRemoving " << x << endl;
     if (this->rootNode == NULL)
@@ -717,9 +884,10 @@ int BPTree::remove(int x)
             return counter;
         }
     }
-    // Non-root
+        // Non-root
     else if (cursor->getSize() >= (MAX + 1) / 2)
     {
+        cout<<"Node size > Minimum size, no further processing required."<<endl;
         // more than min. No further processing
         return counter;
     }
@@ -786,7 +954,7 @@ int BPTree::remove(int x)
         cursor->deleteKeyPtrNode();
         counter++;
     }
-    // node is leftmost alr.
+        // node is leftmost alr.
     else if (right <= parent->getSize())
     {
         // merge right
@@ -807,153 +975,7 @@ int BPTree::remove(int x)
     return counter;
 }
 
-/*
-void BPTree::remove1(int x){
-    cout<<"Deleting "<<x<<endl;
-    int deletedNodes =0;
-
-    //empty
-    if(this->rootNode == NULL){
-        return;
-    } else {
-        Node *cursor = this->rootNode;
-        Node *parent;
-        int left, right;
-
-        //finding node
-        while(!cursor->isLeaf1()){
-            parent = cursor;
-            for(int i=0; i<cursor->getSize(); i++){
-                if (x < cursor->getKey(i)){
-                    left = i-1;
-                    right = i+1;
-                    cursor = cursor->getPtr(i);
-                    break;
-                }
-                if(i == cursor->getSize()-1){
-                    left = i;
-                    right = i+2;
-                }
-            }
-
-        }
-    }
 
 
-}
-*/
 
-void BPTree::display()
-{
 
-    //    if (cursor != NULL) {
-    //        for (int i = 0; i < cursor->getSize(); i++) {
-    //            cout << cursor->getKey(i) << " ";
-    //        }
-    //        cout << "\n";
-    //        if (cursor->isLeaf1() != true) {
-    //            for (int i = 0; i < cursor->getSize() + 1; i++) {
-    //                display(cursor->getPtr(i));
-    //            }
-    //        }
-    //    }
-
-    // BFS printing the tree
-
-    vector<Node *> q;
-    q.push_back(rootNode);
-    int level = 0;
-    while (!q.empty())
-    {
-
-        cout << "Level " << level << ":"
-             << " ";
-        vector<Node *> cpy;
-        for (Node *node : q)
-        {
-            node->display();
-            cpy.push_back(node);
-        }
-        q.clear();
-        for (Node *node : cpy)
-        {
-            if (!node->isLeaf1())
-            {
-                for (int i = 0; i < node->getSize() + 1; i++)
-                {
-                    q.push_back(node->getPtr(i));
-                }
-            }
-        }
-        level++;
-        cout << "\n";
-    }
-}
-
-Node *BPTree::search(float x, bool flag, bool printer)
-{
-    if (rootNode == NULL)
-    {
-        // Empty tree
-        cout << "Tree is empty\n";
-    }
-    else
-    {
-        Node *cursor = rootNode;
-        while (cursor->isLeaf1() == false)
-        {
-            for (int i = 0; i < cursor->getSize(); i++)
-            {
-                if (x < cursor->getKey(i))
-                {
-                    if (printer == true)
-                    {
-                        for (int j = 0; j < cursor->getSize(); j++)
-                        {
-                            cout << "1: ";
-                            cout << cursor->getKey(j) << " ";
-                        }
-                        cout << "\n";
-                    }
-                    cursor = cursor->getPtr(i);
-                    break;
-                }
-                if (i == cursor->getSize() - 1)
-                {
-                    if (printer == true)
-                    {
-                        for (int j = 0; j < cursor->getSize(); j++)
-                        {
-                            cout << "2: ";
-                            cout << cursor->getKey(j) << " ";
-                        }
-                        cout << "\n";
-                    }
-                    cursor = cursor->getPtr(i + 1);
-                    break;
-                }
-            }
-        }
-        if (printer == true)
-        {
-            for (int j = 0; j < cursor->getSize(); j++)
-            {
-                cout << "3: ";
-                cout << cursor->getKey(j) << " ";
-            }
-            cout << "\n";
-        }
-        for (int i = 0; i < cursor->getSize(); i++)
-        {
-            if (cursor->getKey(i) == x)
-            {
-                cout << "Found key\n";
-                cout << "Ptr: " << cursor->getPtr(i) << "\n";
-                cout << "Size:" << cursor->getSize() << "\n";
-            }
-            return cursor;
-        }
-    }
-    cout << "Not found\n";
-    return nullptr;
-}

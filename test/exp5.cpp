@@ -1,12 +1,14 @@
 //
 // Created by praty on 1/10/2022.
 //
-#include "../entities/datablock.h"
-#include "../entities/datablock.cpp"
-#include "../entities/storage.cpp"
-#include "../entities/storage.h"
-#include "../entities/database.h"
-#include "../entities/database.cpp"
+
+//#include "../entities/datablock.h"
+//#include "../entities/datablock.cpp"
+//#include "../entities/storage.cpp"
+//#include "../entities/storage.h"
+//#include "../entities/database.h"
+//#include "../entities/database.cpp"
+#include "../entities/BTree.cpp"
 #include <cstring>
 #include <vector>
 #include <fstream>
@@ -34,12 +36,13 @@ std::vector<std::string> split(const std::string &s, char delim)
 
 int main()
 {
-    cout << "Experiment 1: Store data on the disk and report the following statistics:" << endl;
+    cout << "Experiment 5: delete those movies with the attribute numVotes equal to 1,000" << endl;
     int DbSize1 = 500000000;
-    int blockSize1 = 500;
+    int blockSize1 = 200;
     cout << "Allocated database size: " << DbSize1 / 1000000 << "MB" << endl;
     cout << "Block size: " << blockSize1 << endl;
     Database *db1 = new Database(DbSize1, blockSize1);
+    BPTree *btree = new BPTree();
     ifstream file;
     file.open("../Data/data.tsv");
     int curline = 0;
@@ -58,12 +61,19 @@ int main()
         vector<string> fields = split(line, '\t');
         Record *trec = new Record(fields[0], stof(fields[1]), stoi(fields[2]));
         pair<DataBlock *, int> p1 = db1->addRecord(*trec);
+        if(curline%150 == 2){
+            //cout << curline <<endl;
+        }
+        btree->insert(stoi(fields[2]), p1);
         if (curline == 1070319)
             break;
+
     }
     cout << "(Data loaded)" << endl;
-    DataBlock *dbptr = db1->getFirstBlock();
-    cout << "Number of blocks in db: " << db1->getNumBlocks() << endl;
+    btree->display();
+    cout<< "\n\nRemoving key 1000"<<endl;
+    int foo = btree->remove(1000);
+    btree->display();
+    cout<< "Nodes deleted: "<<foo<<endl;
 
-    cout << "Size of database: " << db1->getSize() << " bytes / 1000000 = " << (db1->getSize()) / 1000000.0 << "MB" << endl;
 }

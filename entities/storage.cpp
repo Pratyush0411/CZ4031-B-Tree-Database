@@ -12,7 +12,7 @@ int Block::getBlkSize() {
 bool Record:: operator == (Record rhs){
 
     if (this->avgRating == rhs.avgRating && strcmp(this->tconst,rhs.tconst)==0
-    && this->numVotes == rhs.numVotes){
+        && this->numVotes == rhs.numVotes){
         return true;
     }
     else{

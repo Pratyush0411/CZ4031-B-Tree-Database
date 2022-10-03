@@ -6,7 +6,7 @@
 #include "storage.h"
 #include "datablock.h"
 #include "vector"
-#include <utility>  
+#include <utility>
 #include<unordered_set>
 
 using namespace std;
