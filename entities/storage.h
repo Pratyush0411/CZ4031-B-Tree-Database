@@ -13,7 +13,7 @@ typedef unsigned int uint;
 
 class Record{
     public:
-    bool isDeleted;
+    bool isDeleted = false;
     char tconst[10] = "";
     float avgRating;
     uint numVotes;
