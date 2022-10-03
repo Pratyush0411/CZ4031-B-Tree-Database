@@ -50,6 +50,7 @@ int DuplicateNode::determineN(int SIZE) {
 
     int current_size = sizeof(*this) - sizeof(this->recordArray);
     int n = (SIZE - current_size) / ((int) sizeof(Record *));
+
     return n;
 
 }
@@ -223,8 +224,10 @@ BPTree::BPTree() {
 }
 
 int BPTree::determineN(int SIZE) {
-    int current_size = sizeof(Node);
-    int n = (SIZE - current_size) / ((int) sizeof(int) + (int)(sizeof(Node*)));
+//    int current_size = sizeof(Node);
+//    int n = (SIZE - current_size) / ((int) sizeof(int) + (int)(sizeof(Node*)));
+    int current_size = 21;
+    int n = (SIZE - current_size) / (4 + 8);
     return n;
 }
 

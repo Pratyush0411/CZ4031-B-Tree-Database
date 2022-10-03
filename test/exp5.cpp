@@ -38,7 +38,7 @@ int main()
 {
     cout << "Experiment 5: delete those movies with the attribute numVotes equal to 1,000" << endl;
     int DbSize1 = 500000000;
-    int blockSize1 = 500;
+    int blockSize1 = 200;
     cout << "Allocated database size: " << DbSize1 / 1000000 << "MB" << endl;
     cout << "Block size: " << blockSize1 << endl;
     Database *db1 = new Database(DbSize1, blockSize1);

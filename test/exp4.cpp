@@ -92,7 +92,7 @@ int main()
      // ptr[size+1] is the ptr to the next leaf node
     // keep on iterating until the key[i] is more than the upper bound 
     cout << "(Data loaded)" << endl;
-    // btree->display();
+    btree->display();
     cout << btree->searchLowerBound(30000,40000) << endl;
     
 }
