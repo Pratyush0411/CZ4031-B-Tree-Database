@@ -3,8 +3,8 @@
 //
 #include "vector"
 #include <queue>
-#include "../entities/storage.h"
-#include "BTree.h"
+#include "../storage.h"
+#include "../BTree.h"
 
 using namespace std;
 
