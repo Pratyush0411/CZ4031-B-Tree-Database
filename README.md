@@ -1,5 +1,8 @@
 # CZ4031-B-Tree-Database
 
+## Description
+As part of the CZ4031 (Database Systems Implementation) course, we were required to develop a simulation of B+ Trees, which are commonly used in modern database applications. Our system allowed users to search, insert, and delete entries in the database. To test the system's capabilities, we used the IMDB movies dataset and created five Python files for experimentation. Our project received special mention from the professor for its overall design and code quality 
+
 ## Installation and run guide:
 - [ ] Download and extract zip file to intended location
 
